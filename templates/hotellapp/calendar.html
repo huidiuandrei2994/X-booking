@@ -1,18 +1,27 @@
 {% extends "hotellapp/base.html" %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Reservations Calendar</h2>
-  <form class="d-flex align-items-center" method="get" action="">
-    <label class="me-2">Start</label>
-    <input type="date" name="start" class="form-control me-2" value="{{ start|date:'Y-m-d' }}">
-    <label class="me-2">Days</label>
-    <select name="days" class="form-select me-2">
-      <option value="7" {% if days == 7 %}selected{% endif %}>7</option>
-      <option value="14" {% if days == 14 %}selected{% endif %}>14</option>
-      <option value="30" {% if days == 30 %}selected{% endif %}>30</option>
-    </select>
-    <button class="btn btn-primary">Go</button>
-  </form>
+  <div class="d-flex align-items-center">
+    <h2 class="me-3 mb-0">Reservations Calendar</h2>
+    <div class="d-none d-md-flex align-items-center small text-muted">
+      <span class="badge me-2" style="background:#0d6efd;">&nbsp;</span> Booked
+      <span class="badge ms-3 me-2" style="background:#198754;">&nbsp;</span> Checked-in
+    </div>
+  </div>
+  <div class="d-flex align-items-center">
+    <a class="btn btn-success me-2" href="{% url 'reservation_add' %}?check_in={{ start|date:'Y-m-d' }}&check_out={{ next_start|date:'Y-m-d' }}">Add reservation</a>
+    <form class="d-flex align-items-center" method="get" action="">
+      <label class="me-2">Start</label>
+      <input type="date" name="start" class="form-control me-2" value="{{ start|date:'Y-m-d' }}">
+      <label class="me-2">Days</label>
+      <select name="days" class="form-select me-2">
+        <option value="7" {% if days == 7 %}selected{% endif %}>7</option>
+        <option value="14" {% if days == 14 %}selected{% endif %}>14</option>
+        <option value="30" {% if days == 30 %}selected{% endif %}>30</option>
+      </select>
+      <button class="btn btn-primary">Go</button>
+    </form>
+  </div>
 </div>
 
 <div class="d-flex justify-content-between mb-2">
@@ -28,6 +37,8 @@
   .block_text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .room-col { width: 220px; text-align: left !important; }
   .cell-empty { background: #f8f9fa; }
+  .progress { height: 10px; }
+  .progress-bar { font-size: 10px; }
 </style>
 
 <div class="table-responsive">
@@ -59,6 +70,19 @@
       {% empty %}
         <tr><td colspan="{{ dates|length|add:1 }}" class="text-center text-muted">No rooms.</td></tr>
       {% endfor %}
+      {% if rooms_data %}
+        <tr>
+          <th class="room-col">Occupancy</th>
+          {% for o in occupancy %}
+            <td>
+              <div class="progress">
+                <div class="progress-bar bg-info" role="progressbar" style="width: {{ o.percent }}%" aria-valuenow="{{ o.percent }}" aria-valuemin="0" aria-valuemax="100">{{ o.percent }}%</div>
+              </div>
+              <small class="text-muted">{{ o.count }}/{{ rooms_count }}</small>
+            </td>
+          {% endfor %}
+        </tr>
+      {% endif %}
     </tbody>
   </table>
 </div>

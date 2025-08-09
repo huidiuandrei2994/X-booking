@@ -4,6 +4,7 @@
 <form method="post" novalidate>
   {% csrf_token %}
   {{ form.non_field_errors }}
+  <div class="alert alert-info">Tip: select dates to filter available rooms automatically.</div>
   <div class="row g-3">
     {% for field in form %}
       <div class="col-md-6">
@@ -18,4 +19,44 @@
     <a class="btn btn-outline-secondary" href="{% url 'reservation_list' %}">Cancel</a>
   </div>
 </form>
+
+<script>
+(function() {
+  const roomSelect = document.getElementById('id_room');
+  const ci = document.getElementById('id_check_in');
+  const co = document.getElementById('id_check_out');
+  const url = "{% url 'api_availability' %}";
+  const info = document.createElement('div');
+  info.className = 'form-text';
+  roomSelect.parentElement.appendChild(info);
+
+  async function refreshRooms() {
+    const start = ci.value, end = co.value;
+    if (!start || !end) return;
+    info.textContent = 'Checking availability...';
+    try {
+      const resp = await fetch(`${url}?start=${start}&end=${end}`);
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Error');
+      const selected = roomSelect.value;
+      roomSelect.innerHTML = '';
+      data.rooms.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        opt.text = `${r.number} (${r.type}) - ${r.price_per_night}`;
+        roomSelect.add(opt);
+      });
+      if (selected && [...roomSelect.options].some(o => o.value === selected)) {
+        roomSelect.value = selected;
+      }
+      info.textContent = `${data.rooms.length} rooms available`;
+    } catch (e) {
+      info.textContent = 'Availability check failed.';
+    }
+  }
+  ci.addEventListener('change', refreshRooms);
+  co.addEventListener('change', refreshRooms);
+  if (ci.value && co.value) refreshRooms();
+})();
+</script>
 {% endblock %}

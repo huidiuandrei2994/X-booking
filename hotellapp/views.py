@@ -89,6 +89,18 @@ class CalendarView(TemplateView):
                 cells.append({"type": "empty", "span": days - cursor})
             rooms_data.append({"room": room, "cells": cells})
 
+        # Daily occupancy across all rooms
+        rooms_count = len(rooms) or 1
+        occupancy = []
+        for d in day_list:
+            active_rooms = set()
+            for r in res_qs:
+                if r.check_in <= d < r.check_out:
+                    active_rooms.add(r.room_id)
+            count = len(active_rooms)
+            percent = int(round(count / rooms_count * 100))
+            occupancy.append({"count": count, "percent": percent})
+
         ctx.update(
             {
                 "start": start,
@@ -97,6 +109,8 @@ class CalendarView(TemplateView):
                 "rooms_data": rooms_data,
                 "prev_start": start - timedelta(days=days),
                 "next_start": start + timedelta(days=days),
+                "occupancy": occupancy,
+                "rooms_count": len(rooms),
             }
         )
         return ctx
@@ -168,6 +182,22 @@ class ReservationCreateView(CreateView):
     form_class = ReservationForm
     template_name = "hotellapp/reservation_form.html"
     success_url = reverse_lazy("reservation_list")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        check_in = self.request.GET.get("check_in")
+        check_out = self.request.GET.get("check_out")
+        client = self.request.GET.get("client")
+        room = self.request.GET.get("room")
+        if check_in:
+            initial["check_in"] = check_in
+        if check_out:
+            initial["check_out"] = check_out
+        if client:
+            initial["client"] = client
+        if room:
+            initial["room"] = room
+        return initial
 
     def form_valid(self, form):
         presenter = ReservationPresenter()
