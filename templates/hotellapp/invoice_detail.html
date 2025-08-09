@@ -1,0 +1,30 @@
+{% extends "hotellapp/base.html" %}
+{% block content %}
+<h2>Invoice #{{ invoice.id }}</h2>
+<div class="card mt-3">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Client</h5>
+        <p class="mb-1">{{ invoice.client.first_name }} {{ invoice.client.last_name }}</p>
+        <p class="mb-1">{{ invoice.client.email }}</p>
+        <p class="mb-0">{{ invoice.client.phone }}</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <h5>Invoice</h5>
+        <p class="mb-1"><strong>Date:</strong> {{ invoice.issue_date }}</p>
+        <p class="mb-1"><strong>Currency:</strong> {{ invoice.currency }}</p>
+        <p class="mb-0"><strong>Total:</strong> {{ invoice.total }} {{ invoice.currency }}</p>
+      </div>
+    </div>
+    <hr />
+    <h5>Reservation</h5>
+    <p class="mb-1"><strong>Room:</strong> {{ invoice.reservation.room.number }} ({{ invoice.reservation.room.get_type_display }})</p>
+    <p class="mb-1"><strong>Check-in:</strong> {{ invoice.reservation.check_in }}</p>
+    <p class="mb-1"><strong>Check-out:</strong> {{ invoice.reservation.check_out }}</p>
+    <p class="mb-1"><strong>Nights:</strong> {{ invoice.reservation.nights }}</p>
+    <p class="mb-0"><strong>Price/night:</strong> {{ invoice.reservation.room.price_per_night }}</p>
+  </div>
+</div>
+<p class="text-muted mt-3">Tip: Pentru PDF, vezi metoda Invoice.render_pdf din cod (WeasyPrint/ReportLab).</p>
+{% endblock %}

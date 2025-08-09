@@ -1,0 +1,65 @@
+{% extends "hotellapp/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Reservations Calendar</h2>
+  <form class="d-flex align-items-center" method="get" action="">
+    <label class="me-2">Start</label>
+    <input type="date" name="start" class="form-control me-2" value="{{ start|date:'Y-m-d' }}">
+    <label class="me-2">Days</label>
+    <select name="days" class="form-select me-2">
+      <option value="7" {% if days == 7 %}selected{% endif %}>7</option>
+      <option value="14" {% if days == 14 %}selected{% endif %}>14</option>
+      <option value="30" {% if days == 30 %}selected{% endif %}>30</option>
+    </select>
+    <button class="btn btn-primary">Go</button>
+  </form>
+</div>
+
+<div class="d-flex justify-content-between mb-2">
+  <a class="btn btn-outline-secondary" href="?start={{ prev_start|date:'Y-m-d' }}&days={{ days }}">« Prev</a>
+  <a class="btn btn-outline-secondary" href="?start={{ next_start|date:'Y-m-d' }}&days={{ days }}">Next »</a>
+</div>
+
+<style>
+  .calendar-table th, .calendar-table td { text-align: center; vertical-align: middle; }
+  .block { border-radius: 999px; padding: 0.35rem 0.6rem; color: #fff; font-weight: 500; }
+  .block.booked { background-color: #0d6efd; }      /* primary */
+  .block.checked_in { background-color: #198754; }  /* success */
+  .block_text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .room-col { width: 220px; text-align: left !important; }
+  .cell-empty { background: #f8f9fa; }
+</style>
+
+<div class="table-responsive">
+  <table class="table table-bordered calendar-table">
+    <thead class="table-light">
+      <tr>
+        <th class="room-col">Room</th>
+        {% for d in dates %}
+          <th>{{ d.d|date:"d" }}<br><small class="text-muted">{{ d.dow }}</small></th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rooms_data %}
+        <tr>
+          <th class="room-col">{{ row.room.number }} <small class="text-muted">({{ row.room.get_type_display }})</small></th>
+          {% for cell in row.cells %}
+            {% if cell.type == 'block' %}
+              <td colspan="{{ cell.span }}">
+                <div class="block {{ cell.status }}">
+                  <span class="block_text">#{{ cell.reservation_id }} • {{ cell.label }}</span>
+                </div>
+              </td>
+            {% else %}
+              <td class="cell-empty" colspan="{{ cell.span }}"></td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% empty %}
+        <tr><td colspan="{{ dates|length|add:1 }}" class="text-center text-muted">No rooms.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

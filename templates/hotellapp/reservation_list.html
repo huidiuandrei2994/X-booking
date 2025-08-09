@@ -1,0 +1,54 @@
+{% extends "hotellapp/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Reservations</h2>
+  <a class="btn btn-primary" href="{% url 'reservation_add' %}">Add Reservation</a>
+</div>
+
+<table class="table table-striped align-middle">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Client</th>
+      <th>Room</th>
+      <th>Dates</th>
+      <th>Status</th>
+      <th>Total</th>
+      <th class="text-end">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in reservations %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.client }}</td>
+        <td>{{ r.room.number }} ({{ r.room.get_type_display }})</td>
+        <td>{{ r.check_in }} → {{ r.check_out }} ({{ r.nights }} nights)</td>
+        <td><span class="badge text-bg-info">{{ r.get_status_display }}</span></td>
+        <td>
+          {% if r.invoice %}{{ r.invoice.total }} {{ r.invoice.currency }}{% else %}—{% endif %}
+        </td>
+        <td class="text-end">
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'reservation_edit' r.pk %}">Edit</a>
+          {% if r.status == 'booked' %}
+            <form method="post" action="{% url 'reservation_check_in' r.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-success">Check-in</button>
+            </form>
+          {% elif r.status == 'checked_in' %}
+            <form method="post" action="{% url 'reservation_check_out' r.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-warning">Check-out</button>
+            </form>
+          {% endif %}
+          {% if r.invoice %}
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'invoice_detail' r.invoice.pk %}">Invoice</a>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7" class="text-center text-muted">No reservations yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

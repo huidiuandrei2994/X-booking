@@ -1,0 +1,42 @@
+{% extends "hotellapp/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Rooms</h2>
+  <a class="btn btn-primary" href="{% url 'room_add' %}">Add Room</a>
+</div>
+
+<table class="table table-striped align-middle">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Type</th>
+      <th>Price/night</th>
+      <th>Status</th>
+      <th class="text-end">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for room in rooms %}
+      <tr>
+        <td>{{ room.number }}</td>
+        <td>{{ room.get_type_display }}</td>
+        <td>{{ room.price_per_night }}</td>
+        <td>
+          <span class="badge text-bg-secondary">{{ room.get_status_display }}</span>
+        </td>
+        <td class="text-end">
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'room_edit' room.pk %}">Edit</a>
+          {% if room.status == 'cleaning' %}
+            <form method="post" action="{% url 'room_mark_cleaned' room.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-success">Mark cleaned</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="text-center text-muted">No rooms yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
