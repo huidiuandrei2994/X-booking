@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, View, TemplateView, DeleteView
+from django.db.models.deletion import ProtectedError
 
 from .forms import RoomForm, ClientForm, ReservationForm
 from .models import Room, Client, Reservation, Invoice
@@ -142,6 +143,14 @@ class RoomDeleteView(DeleteView):
     template_name = "hotellapp/room_confirm_delete.html"
     success_url = reverse_lazy("room_list")
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        try:
+            return super().delete(request, *args, **kwargs)
+        except ProtectedError:
+            messages.error(request, "Cannot delete room with existing reservations.")
+            return redirect("room_list")
+
 
 # Clients
 class ClientListView(ListView):
@@ -169,12 +178,57 @@ class ClientDeleteView(DeleteView):
     template_name = "hotellapp/client_confirm_delete.html"
     success_url = reverse_lazy("client_list")
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        try:
+            return super().delete(request, *args, **kwargs)
+        except ProtectedError:
+            messages.error(request, "Cannot delete client with existing reservations or invoices.")
+            return redirect("client_list")
+
 
 # Reservations
 class ReservationListView(ListView):
     model = Reservation
     template_name = "hotellapp/reservation_list.html"
     context_object_name = "reservations"
+    paginate_by = 25
+
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("client", "room")
+        q = self.request.GET.get("q", "").strip()
+        status = self.request.GET.get("status")
+        start = self.request.GET.get("start")
+        end = self.request.GET.get("end")
+        if q:
+            qs = qs.filter(
+                models.Q(client__first_name__icontains=q)
+                | models.Q(client__last_name__icontains=q)
+                | models.Q(room__number__icontains=q)
+            )
+        if status:
+            qs = qs.filter(status=status)
+        if start:
+            try:
+                qs = qs.filter(check_out__gte=date.fromisoformat(start))
+            except ValueError:
+                pass
+        if end:
+            try:
+                qs = qs.filter(check_in__lte=date.fromisoformat(end))
+            except ValueError:
+                pass
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["filter"] = {
+            "q": self.request.GET.get("q", ""),
+            "status": self.request.GET.get("status", ""),
+            "start": self.request.GET.get("start", ""),
+            "end": self.request.GET.get("end", ""),
+        }
+        return ctx
 
 
 class ReservationCreateView(CreateView):
@@ -217,6 +271,14 @@ class ReservationDeleteView(DeleteView):
     template_name = "hotellapp/reservation_confirm_delete.html"
     success_url = reverse_lazy("reservation_list")
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        try:
+            return super().delete(request, *args, **kwargs)
+        except ProtectedError:
+            messages.error(request, "Cannot delete reservation that is referenced by other records.")
+            return redirect("reservation_list")
+
 
 # Workflow actions
 class ReservationCheckInView(View):
@@ -230,6 +292,13 @@ class ReservationCheckOutView(View):
     def post(self, request: HttpRequest, pk: int) -> HttpResponse:
         reservation = get_object_or_404(Reservation, pk=pk)
         ReservationPresenter().check_out(request, reservation)
+        return redirect("reservation_list")
+
+
+class ReservationCancelView(View):
+    def post(self, request: HttpRequest, pk: int) -> HttpResponse:
+        reservation = get_object_or_404(Reservation, pk=pk)
+        ReservationPresenter().cancel(request, reservation)
         return redirect("reservation_list")
 
 

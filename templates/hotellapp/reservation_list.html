@@ -5,6 +5,35 @@
   <a class="btn btn-primary" href="{% url 'reservation_add' %}">Add Reservation</a>
 </div>
 
+<form method="get" class="row g-2 align-items-end mb-3">
+  <div class="col-md-3">
+    <label class="form-label">Search</label>
+    <input type="text" name="q" class="form-control" value="{{ filter.q }}">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">From</label>
+    <input type="date" name="start" class="form-control" value="{{ filter.start }}">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">To</label>
+    <input type="date" name="end" class="form-control" value="{{ filter.end }}">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Status</label>
+    <select name="status" class="form-select">
+      <option value="">All</option>
+      <option value="booked" {% if filter.status == 'booked' %}selected{% endif %}>Booked</option>
+      <option value="checked_in" {% if filter.status == 'checked_in' %}selected{% endif %}>Checked-in</option>
+      <option value="checked_out" {% if filter.status == 'checked_out' %}selected{% endif %}>Checked-out</option>
+      <option value="canceled" {% if filter.status == 'canceled' %}selected{% endif %}>Canceled</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <button class="btn btn-outline-primary me-2">Filter</button>
+    <a class="btn btn-outline-secondary" href="{% url 'reservation_list' %}">Reset</a>
+  </div>
+</form>
+
 <table class="table table-striped align-middle">
   <thead>
     <tr>
@@ -35,6 +64,10 @@
               {% csrf_token %}
               <button class="btn btn-sm btn-success">Check-in</button>
             </form>
+            <form method="post" action="{% url 'reservation_cancel' r.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-outline-warning">Cancel</button>
+            </form>
           {% elif r.status == 'checked_in' %}
             <form method="post" action="{% url 'reservation_check_out' r.pk %}" class="d-inline">
               {% csrf_token %}
@@ -53,4 +86,26 @@
     {% endfor %}
   </tbody>
 </table>
+
+{% if is_paginated %}
+<nav aria-label="Pagination">
+  <ul class="pagination justify-content-end">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page=1">« First</a></li>
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">‹ Prev</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">« First</span></li>
+      <li class="page-item disabled"><span class="page-link">‹ Prev</span></li>
+    {% endif %}
+    <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span></li>
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next ›</a></li>
+      <li class="page-item"><a class="page-link" href="?page={{ paginator.num_pages }}">Last »</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Next ›</span></li>
+      <li class="page-item disabled"><span class="page-link">Last »</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
 {% endblock %}

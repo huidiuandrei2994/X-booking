@@ -7,7 +7,7 @@ from .views import (
     RoomListView, RoomCreateView, RoomUpdateView, RoomDeleteView,
     ClientListView, ClientCreateView, ClientUpdateView, ClientDeleteView,
     ReservationListView, ReservationCreateView, ReservationUpdateView, ReservationDeleteView,
-    ReservationCheckInView, ReservationCheckOutView, RoomMarkCleanedView,
+    ReservationCheckInView, ReservationCheckOutView, ReservationCancelView, RoomMarkCleanedView,
     InvoiceListView, InvoiceDetailView, InvoicePrintView, InvoicesCsvExportView,
     AvailabilityAPI,
 )
@@ -37,6 +37,7 @@ urlpatterns = [
     path("reservations/<int:pk>/delete/", ReservationDeleteView.as_view(), name="reservation_delete"),
     path("reservations/<int:pk>/check-in/", ReservationCheckInView.as_view(), name="reservation_check_in"),
     path("reservations/<int:pk>/check-out/", ReservationCheckOutView.as_view(), name="reservation_check_out"),
+    path("reservations/<int:pk>/cancel/", ReservationCancelView.as_view(), name="reservation_cancel"),
 
     # Invoices
     path("invoices/", InvoiceListView.as_view(), name="invoice_list"),

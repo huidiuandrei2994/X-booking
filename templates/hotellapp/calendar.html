@@ -58,9 +58,11 @@
           {% for cell in row.cells %}
             {% if cell.type == 'block' %}
               <td colspan="{{ cell.span }}">
-                <div class="block {{ cell.status }}">
-                  <span class="block_text">#{{ cell.reservation_id }} • {{ cell.label }}</span>
-                </div>
+                <a class="text-decoration-none" href="{% url 'reservation_edit' cell.reservation_id %}">
+                  <div class="block {{ cell.status }}">
+                    <span class="block_text">#{{ cell.reservation_id }} • {{ cell.label }}</span>
+                  </div>
+                </a>
               </td>
             {% else %}
               <td class="cell-empty" colspan="{{ cell.span }}"></td>
