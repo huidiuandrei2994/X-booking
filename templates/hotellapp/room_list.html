@@ -1,12 +1,12 @@
 {% extends "hotellapp/base.html" %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Rooms</h2>
-  <a class="btn btn-primary" href="{% url 'room_add' %}">Add Room</a>
+  <h2 class="mb-0">Rooms</h2>
+  <a class="btn btn-primary" href="{% url 'room_add' %}"><i class="bi bi-plus-lg me-1"></i>Add Room</a>
 </div>
 
-<table class="table table-striped align-middle">
-  <thead>
+<table class="table table-hover align-middle table-modern">
+  <thead class="table-light">
     <tr>
       <th>#</th>
       <th>Type</th>
@@ -18,21 +18,21 @@
   <tbody>
     {% for room in rooms %}
       <tr>
-        <td>{{ room.number }}</td>
-        <td>{{ room.get_type_display }}</td>
+        <td><span class="fw-semibold">{{ room.number }}</span></td>
+        <td><span class="badge rounded-pill text-bg-light border">{{ room.get_type_display }}</span></td>
         <td>{{ room.price_per_night }}</td>
         <td>
-          <span class="badge text-bg-secondary">{{ room.get_status_display }}</span>
+          <span class="badge status-badge status-{{ room.status }}">{{ room.get_status_display }}</span>
         </td>
         <td class="text-end">
-          <a class="btn btn-sm btn-outline-secondary" href="{% url 'room_edit' room.pk %}">Edit</a>
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'room_edit' room.pk %}"><i class="bi bi-pencil-square"></i> Edit</a>
           {% if room.status == 'cleaning' %}
             <form method="post" action="{% url 'room_mark_cleaned' room.pk %}" class="d-inline">
               {% csrf_token %}
-              <button class="btn btn-sm btn-success">Mark cleaned</button>
+              <button class="btn btn-sm btn-success"><i class="bi bi-broom"></i> Mark cleaned</button>
             </form>
           {% endif %}
-          <a class="btn btn-sm btn-outline-danger" href="{% url 'room_delete' room.pk %}">Delete</a>
+          <a class="btn btn-sm btn-outline-danger" href="{% url 'room_delete' room.pk %}"><i class="bi bi-trash"></i> Delete</a>
         </td>
       </tr>
     {% empty %}

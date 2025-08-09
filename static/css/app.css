@@ -1,0 +1,54 @@
+:root {
+  --app-bg: #f6f7fb;
+  --text-muted: #6c757d;
+  --status-booked: #0d6efd;       /* primary */
+  --status-checked-in: #198754;   /* success */
+  --status-checked-out: #6f42c1;  /* purple */
+  --status-canceled: #dc3545;     /* danger */
+
+  --room-available: #20c997; /* teal */
+  --room-occupied: #fd7e14;  /* orange */
+  --room-cleaning: #ffc107;  /* yellow */
+}
+
+body {
+  background: var(--app-bg);
+}
+
+.table-modern tbody tr:hover {
+  background-color: rgba(13,110,253,.03);
+}
+
+.badge.status-badge {
+  color: #fff;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: .4rem .6rem;
+  letter-spacing: .2px;
+}
+.status-badge.status-booked { background: var(--status-booked); }
+.status-badge.status-checked_in { background: var(--status-checked-in); }
+.status-badge.status-checked_out { background: var(--status-checked-out); }
+.status-badge.status-canceled { background: var(--status-canceled); }
+
+/* Room status pills */
+.status-badge.status-available { background: var(--room-available); }
+.status-badge.status-occupied { background: var(--room-occupied); }
+.status-badge.status-cleaning { background: var(--room-cleaning); color: #000; }
+
+/* Calendar blocks */
+.block {
+  border-radius: 999px;
+  padding: .35rem .6rem;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+.block.booked { background-color: var(--status-booked); }
+.block.checked_in { background-color: var(--status-checked-in); }
+.block_text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.room-col { width: 220px; text-align: left !important; }
+.cell-empty { background: #f8f9fa; }
+
+/* Cards & alerts */
+.alert { border-radius: .75rem; }

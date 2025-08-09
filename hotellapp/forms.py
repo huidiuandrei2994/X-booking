@@ -6,19 +6,38 @@ from django.core.exceptions import ValidationError
 from .models import Room, Client, Reservation
 
 
-class RoomForm(forms.ModelForm):
+class BootstrapFormMixin:
+    """
+    Apply Bootstrap styles to Django form fields automatically.
+    """
+    def _bootstrapify(self):
+        for name, field in self.fields.items():
+            widget = field.widget
+            # Skip checkbox/radio; they have their own styles
+            if isinstance(widget, (forms.CheckboxInput, forms.RadioSelect)):
+                continue
+            base_class = "form-select" if isinstance(widget, forms.Select) else "form-control"
+            existing = widget.attrs.get("class", "")
+            widget.attrs["class"] = f"{existing} {base_class}".strip()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._bootstrapify()
+
+
+class RoomForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Room
         fields = ["number", "type", "price_per_night", "status"]
 
 
-class ClientForm(forms.ModelForm):
+class ClientForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Client
         fields = ["first_name", "last_name", "email", "phone"]
 
 
-class ReservationForm(forms.ModelForm):
+class ReservationForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Reservation
         fields = ["client", "room", "check_in", "check_out"]
