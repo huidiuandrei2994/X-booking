@@ -43,7 +43,9 @@
           {% endif %}
           {% if r.invoice %}
             <a class="btn btn-sm btn-outline-primary" href="{% url 'invoice_detail' r.invoice.pk %}">Invoice</a>
+            <a class="btn btn-sm btn-primary" href="{% url 'invoice_print' r.invoice.pk %}" target="_blank">Print</a>
           {% endif %}
+          <a class="btn btn-sm btn-outline-danger" href="{% url 'reservation_delete' r.pk %}">Delete</a>
         </td>
       </tr>
     {% empty %}

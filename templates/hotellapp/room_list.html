@@ -32,6 +32,7 @@
               <button class="btn btn-sm btn-success">Mark cleaned</button>
             </form>
           {% endif %}
+          <a class="btn btn-sm btn-outline-danger" href="{% url 'room_delete' room.pk %}">Delete</a>
         </td>
       </tr>
     {% empty %}

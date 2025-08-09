@@ -22,6 +22,7 @@
         <td>{{ c.phone|default:"—" }}</td>
         <td class="text-end">
           <a class="btn btn-sm btn-outline-secondary" href="{% url 'client_edit' c.pk %}">Edit</a>
+          <a class="btn btn-sm btn-outline-danger" href="{% url 'client_delete' c.pk %}">Delete</a>
         </td>
       </tr>
     {% empty %}
