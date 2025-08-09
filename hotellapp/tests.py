@@ -24,12 +24,14 @@ class ReservationValidationTests(TestCase):
         with self.assertRaises(ValidationError):
             r2.full_clean()
 
-    def test_nights_and_invoice_total(self):
+    def test_nights_and_invoice_total_auto_created(self):
         start = date.today() + timedelta(days=1)
         end = start + timedelta(days=4)  # 3 nights
         res = Reservation.objects.create(client=self.client, room=self.room, check_in=start, check_out=end)
         self.assertEqual(res.nights, 3)
-        inv = Invoice.objects.create(reservation=res, client=self.client)
+        # Invoice should be auto-created by signal
+        inv = res.invoice
+        self.assertIsNotNone(inv)
         self.assertEqual(inv.total, Decimal("300.00"))
 
 
@@ -45,7 +47,6 @@ class PresenterWorkflowTests(TestCase):
         presenter = ReservationPresenter()
         class DummyReq: pass
         req = DummyReq()
-        # Use plain object with no messages framework in tests
         setattr(req, "_messages", None)
 
         presenter.check_in(req, self.res)
@@ -59,3 +60,16 @@ class PresenterWorkflowTests(TestCase):
         self.room.refresh_from_db()
         self.assertEqual(self.res.status, Reservation.Status.CHECKED_OUT)
         self.assertEqual(self.room.status, Room.Status.CLEANING)
+
+    def test_direct_status_change_syncs_room_via_signals(self):
+        # Change status directly (simulating admin edit)
+        self.res.status = Reservation.Status.CHECKED_IN
+        self.res.save(update_fields=["status"])
+        self.room.refresh_from_db()
+        self.assertEqual(self.room.status, Room.Status.OCCUPIED)
+
+        self.res.status = Reservation.Status.CANCELED
+        self.res.save(update_fields=["status"])
+        self.room.refresh_from_db()
+        # No checked-in reservations remain, room becomes available
+        self.assertEqual(self.room.status, Room.Status.AVAILABLE)

@@ -10,7 +10,9 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, View, TemplateView, DeleteView
 from django.db.models.deletion import ProtectedError
+from django.db import models
 
+from . import models
 from .forms import RoomForm, ClientForm, ReservationForm
 from .models import Room, Client, Reservation, Invoice
 from .presenters import ReservationPresenter
@@ -333,7 +335,9 @@ class InvoicesCsvExportView(View):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="invoices.csv"'
         writer = csv.writer(response)
-        writer.writerow(["ID", "Issue Date", "Client", "Room", "Check-in", "Check-out", "Nights", "Price/night", "Total", "Currency"])
+        writer.writerow(
+            ["ID", "Issue Date", "Client", "Room", "Check-in", "Check-out", "Nights", "Price/night", "Total",
+             "Currency"])
         qs = Invoice.objects.select_related("client", "reservation__room").order_by("-issue_date")
         for inv in qs:
             r = inv.reservation
@@ -358,6 +362,7 @@ class AvailabilityAPI(View):
     Returns JSON list of available rooms for a given date range and optional type.
     GET params: start=YYYY-MM-DD, end=YYYY-MM-DD, type=<Room.Type value>
     """
+
     def get(self, request: HttpRequest) -> JsonResponse:
         start_s = request.GET.get("start")
         end_s = request.GET.get("end")
@@ -381,7 +386,8 @@ class AvailabilityAPI(View):
             rooms_qs = rooms_qs.filter(type=room_type)
 
         rooms = [
-            {"id": r.id, "number": r.number, "type": r.type, "price_per_night": str(r.price_per_night), "status": r.status}
+            {"id": r.id, "number": r.number, "type": r.type, "price_per_night": str(r.price_per_night),
+             "status": r.status}
             for r in rooms_qs.order_by("number")
         ]
         return JsonResponse({"start": start.isoformat(), "end": end.isoformat(), "rooms": rooms})

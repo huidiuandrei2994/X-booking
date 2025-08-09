@@ -59,6 +59,7 @@
         </td>
         <td class="text-end">
           <a class="btn btn-sm btn-outline-secondary" href="{% url 'reservation_edit' r.pk %}">Edit</a>
+          <a class="btn btn-sm btn-outline-info" href="{% url 'reservation_add' %}?client={{ r.client.pk }}&room={{ r.room.pk }}&check_in={{ r.check_in|date:'Y-m-d' }}&check_out={{ r.check_out|date:'Y-m-d' }}">Duplicate</a>
           {% if r.status == 'booked' %}
             <form method="post" action="{% url 'reservation_check_in' r.pk %}" class="d-inline">
               {% csrf_token %}
