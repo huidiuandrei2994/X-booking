@@ -1,0 +1,93 @@
+{% extends "hotellapp/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Night Audit</h2>
+  <a class="btn btn-outline-secondary" href="{% url 'night_audit_list' %}"><i class="bi bi-clock-history me-1"></i>History</a>
+</div>
+
+<form method="get" class="row g-2 align-items-end mb-3">
+  <div class="col-md-3">
+    <label class="form-label">Date</label>
+    <input type="date" name="date" class="form-control" value="{{ audit_date|date:'Y-m-d' }}">
+  </div>
+  <div class="col-md-3">
+    <button class="btn btn-primary"><i class="bi bi-search me-1"></i>Preview</button>
+  </div>
+</form>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="text-muted">Occupancy</div>
+        <div class="fs-4 fw-semibold">{{ occupancy_percent }}% <small class="text-muted">({{ occupied_rooms_count }}/{{ total_rooms }})</small></div>
+        <div class="progress mt-2" style="height: 10px;">
+          <div class="progress-bar bg-info" role="progressbar" style="width: {{ occupancy_percent }}%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="text-muted">Revenue</div>
+        <div class="fs-4 fw-semibold">{{ revenue }}</div>
+        <div class="text-muted small">ADR: {{ adr }} • RevPAR: {{ revpar }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col">
+            <div class="text-muted">Arrivals</div>
+            <div class="fs-4 fw-semibold">{{ arrivals_count }}</div>
+          </div>
+          <div class="col">
+            <div class="text-muted">Departures</div>
+            <div class="fs-4 fw-semibold">{{ departures_count }}</div>
+          </div>
+          <div class="col">
+            <div class="text-muted">Stayovers</div>
+            <div class="fs-4 fw-semibold">{{ stayover_count }}</div>
+          </div>
+          <div class="col">
+            <div class="text-muted">No-shows</div>
+            <div class="fs-4 fw-semibold">{{ no_shows_count }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if already_closed %}
+<div class="alert alert-warning">This date is already closed.</div>
+{% else %}
+<form method="post" action="{% url 'night_audit_close' %}" onsubmit="return confirm('Close the day {{ audit_date|date:'Y-m-d' }}? This will mark no-shows as canceled.');">
+  {% csrf_token %}
+  <input type="hidden" name="date" value="{{ audit_date|date:'Y-m-d' }}">
+  <button class="btn btn-success"><i class="bi bi-check2-square me-1"></i>Close Day</button>
+</form>
+{% endif %}
+
+<div class="row mt-4">
+  <div class="col-md-6">
+    <h5>Arrivals (sample)</h5>
+    <ul class="mb-0">
+      {% for r in arrivals %}
+        <li>#{{ r.id }} — {{ r.client }} • Room {{ r.room.number }}</li>
+      {% empty %}<li class="text-muted">—</li>{% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <h5>Departures (sample)</h5>
+    <ul class="mb-0">
+      {% for r in departures %}
+        <li>#{{ r.id }} — {{ r.client }} • Room {{ r.room.number }}</li>
+      {% empty %}<li class="text-muted">—</li>{% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

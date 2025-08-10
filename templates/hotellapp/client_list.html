@@ -11,6 +11,7 @@
       <th>Name</th>
       <th>Email</th>
       <th>Phone</th>
+      <th>Document</th>
       <th class="text-end">Actions</th>
     </tr>
   </thead>
@@ -20,13 +21,14 @@
         <td>{{ c.first_name }} {{ c.last_name }}</td>
         <td>{{ c.email|default:"—" }}</td>
         <td>{{ c.phone|default:"—" }}</td>
+        <td>{{ c.document_id|default:"—" }}</td>
         <td class="text-end">
           <a class="btn btn-sm btn-outline-secondary" href="{% url 'client_edit' c.pk %}">Edit</a>
           <a class="btn btn-sm btn-outline-danger" href="{% url 'client_delete' c.pk %}">Delete</a>
         </td>
       </tr>
     {% empty %}
-      <tr><td colspan="4" class="text-center text-muted">No clients yet.</td></tr>
+      <tr><td colspan="5" class="text-center text-muted">No clients yet.</td></tr>
     {% endfor %}
   </tbody>
 </table>

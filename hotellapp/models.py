@@ -35,6 +35,12 @@ class Client(models.Model):
     last_name = models.CharField(max_length=100)
     email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=30, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+    document_id = models.CharField("ID/Passport", max_length=50, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self) -> str:  # pragma: no cover
         return f"{self.first_name} {self.last_name}".strip()
@@ -152,3 +158,19 @@ class Invoice(models.Model):
         Keep this method returning an HttpResponse for direct download when you wire it up.
         """
         raise NotImplementedError("PDF generation not implemented. See docstring for guidance.")
+
+
+class NightAudit(models.Model):
+    """
+    End-of-day snapshot (night audit) with key metrics stored as JSON.
+    """
+    date = models.DateField(unique=True)
+    closed_at = models.DateTimeField(auto_now_add=True)
+    totals = models.JSONField(default=dict)
+    notes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["-date"]
+
+    def __str__(self) -> str:  # pragma: no cover
+        return f"Night Audit {self.date}"

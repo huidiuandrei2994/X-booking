@@ -9,6 +9,8 @@ from .views import (
     ReservationListView, ReservationCreateView, ReservationUpdateView, ReservationDeleteView,
     ReservationCheckInView, ReservationCheckOutView, ReservationCancelView, RoomMarkCleanedView,
     InvoiceListView, InvoiceDetailView, InvoicePrintView, InvoicesCsvExportView,
+        NightAuditPreviewView, NightAuditCloseView, NightAuditListView, NightAuditDetailView, NightAuditCsvExportView,
+    ReportsDashboardView, ReportOccupancyView, ReportRevenueView, ReportHousekeepingView,
     AvailabilityAPI,
 )
 
@@ -44,6 +46,19 @@ urlpatterns = [
     path("invoices/<int:pk>/", InvoiceDetailView.as_view(), name="invoice_detail"),
     path("invoices/<int:pk>/print/", InvoicePrintView.as_view(), name="invoice_print"),
     path("invoices/export/csv/", InvoicesCsvExportView.as_view(), name="invoices_export_csv"),
+
+        # Night Audit
+        path("audit/", NightAuditPreviewView.as_view(), name="night_audit"),
+        path("audit/close/", NightAuditCloseView.as_view(), name="night_audit_close"),
+        path("audit/history/", NightAuditListView.as_view(), name="night_audit_list"),
+        path("audit/<int:pk>/", NightAuditDetailView.as_view(), name="night_audit_detail"),
+        path("audit/export/csv/", NightAuditCsvExportView.as_view(), name="night_audit_export_csv"),
+
+    # Reports
+    path("reports/", ReportsDashboardView.as_view(), name="reports_dashboard"),
+    path("reports/occupancy/", ReportOccupancyView.as_view(), name="report_occupancy"),
+    path("reports/revenue/", ReportRevenueView.as_view(), name="report_revenue"),
+    path("reports/housekeeping/", ReportHousekeepingView.as_view(), name="report_housekeeping"),
 
     # API
     path("api/availability/", AvailabilityAPI.as_view(), name="api_availability"),

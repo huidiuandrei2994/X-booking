@@ -34,7 +34,16 @@ class RoomForm(BootstrapFormMixin, forms.ModelForm):
 class ClientForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Client
-        fields = ["first_name", "last_name", "email", "phone"]
+        fields = [
+            "first_name", "last_name",
+            "email", "phone",
+            "address", "city", "country",
+            "date_of_birth", "document_id", "notes",
+        ]
+        widgets = {
+            "date_of_birth": forms.DateInput(attrs={"type": "date"}),
+            "notes": forms.Textarea(attrs={"rows": 3}),
+        }
 
 
 class ReservationForm(BootstrapFormMixin, forms.ModelForm):

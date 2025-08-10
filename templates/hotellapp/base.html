@@ -24,6 +24,8 @@
         <li class="nav-item"><a class="nav-link {% if current in 'client_list client_add client_edit' %}active{% endif %}" href="{% url 'client_list' %}"><i class="bi bi-people me-1"></i>Clients</a></li>
         <li class="nav-item"><a class="nav-link {% if current in 'reservation_list reservation_add reservation_edit' %}active{% endif %}" href="{% url 'reservation_list' %}"><i class="bi bi-box-seam me-1"></i>Reservations</a></li>
         <li class="nav-item"><a class="nav-link {% if current in 'invoice_list invoice_detail' %}active{% endif %}" href="{% url 'invoice_list' %}"><i class="bi bi-receipt me-1"></i>Invoices</a></li>
+        <li class="nav-item"><a class="nav-link {% if current in 'night_audit night_audit_list night_audit_detail' %}active{% endif %}" href="{% url 'night_audit' %}"><i class="bi bi-moon-stars me-1"></i>Night Audit</a></li>
+        <li class="nav-item"><a class="nav-link {% if current in 'reports_dashboard report_occupancy report_revenue report_housekeeping' %}active{% endif %}" href="{% url 'reports_dashboard' %}"><i class="bi bi-graph-up-arrow me-1"></i>Reports</a></li>
       </ul>
       {% endwith %}
     </div>

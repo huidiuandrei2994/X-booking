@@ -1,0 +1,52 @@
+{% extends "hotellapp/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Housekeeping Overview</h2>
+  <a class="btn btn-outline-secondary" href="{% url 'reports_dashboard' %}">Back</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card h-100 border-success">
+      <div class="card-body">
+        <h5 class="card-title">Available ({{ counts.available }})</h5>
+        <ul class="mb-0">
+          {% for r in by_status.available %}
+            <li>Room {{ r.number }}</li>
+          {% empty %}
+            <li class="text-muted">—</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-danger">
+      <div class="card-body">
+        <h5 class="card-title">Occupied ({{ counts.occupied }})</h5>
+        <ul class="mb-0">
+          {% for r in by_status.occupied %}
+            <li>Room {{ r.number }}</li>
+          {% empty %}
+            <li class="text-muted">—</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-warning">
+      <div class="card-body">
+        <h5 class="card-title">Cleaning ({{ counts.cleaning }})</h5>
+        <ul class="mb-0">
+          {% for r in by_status.cleaning %}
+            <li>Room {{ r.number }}</li>
+          {% empty %}
+            <li class="text-muted">—</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

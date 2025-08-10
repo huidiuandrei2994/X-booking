@@ -22,8 +22,8 @@ class ReservationPresenter:
             reservation: Reservation = form.save(commit=False)
             reservation.status = Reservation.Status.BOOKED
             reservation.save()
-            # Create invoice snapshot for the booking immediately
-            Invoice.objects.create(reservation=reservation, client=reservation.client)
+            # Create invoice snapshot for the booking immediately (idempotent)
+            Invoice.objects.get_or_create(reservation=reservation, defaults={"client": reservation.client})
         messages.success(request, "Reservation created and invoice generated.")
         return reservation
 
@@ -34,10 +34,7 @@ class ReservationPresenter:
         with transaction.atomic():
             reservation.status = Reservation.Status.CHECKED_IN
             reservation.save(update_fields=["status", "updated_at"])
-            room = reservation.room
-            room.status = Room.Status.OCCUPIED
-            room.save(update_fields=["status"])
-        messages.success(request, f"Guest checked-in. Room {reservation.room.number} is now occupied.")
+        messages.success(request, f"Guest checked-in for reservation #{reservation.pk}.")
 
     def check_out(self, request: HttpRequest, reservation: Reservation) -> None:
         if reservation.status != Reservation.Status.CHECKED_IN:
@@ -46,10 +43,7 @@ class ReservationPresenter:
         with transaction.atomic():
             reservation.status = Reservation.Status.CHECKED_OUT
             reservation.save(update_fields=["status", "updated_at"])
-            room = reservation.room
-            room.status = Room.Status.CLEANING
-            room.save(update_fields=["status"])
-        messages.success(request, f"Guest checked-out. Room {reservation.room.number} set to cleaning.")
+        messages.success(request, "Guest checked-out.")
 
     def mark_room_cleaned(self, request: HttpRequest, room: Room) -> None:
         with transaction.atomic():
@@ -64,8 +58,4 @@ class ReservationPresenter:
         with transaction.atomic():
             reservation.status = Reservation.Status.CANCELED
             reservation.save(update_fields=["status", "updated_at"])
-            # If not checked-in, ensure room stays available
-            if reservation.room.status != Room.Status.OCCUPIED:
-                reservation.room.status = Room.Status.AVAILABLE
-                reservation.room.save(update_fields=["status"])
         messages.success(request, "Reservation canceled.")

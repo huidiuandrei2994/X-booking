@@ -1,0 +1,35 @@
+{% extends "hotellapp/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Reports</h2>
+</div>
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Occupancy</h5>
+        <p class="card-text text-muted">Daily occupancy percentage across rooms.</p>
+        <a href="{% url 'report_occupancy' %}" class="btn btn-primary">Open</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Revenue</h5>
+        <p class="card-text text-muted">Daily revenue based on invoices.</p>
+        <a href="{% url 'report_revenue' %}" class="btn btn-primary">Open</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Housekeeping</h5>
+        <p class="card-text text-muted">Rooms per status for quick housekeeping.</p>
+        <a href="{% url 'report_housekeeping' %}" class="btn btn-primary">Open</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
