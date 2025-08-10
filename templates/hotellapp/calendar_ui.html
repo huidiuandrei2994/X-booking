@@ -82,6 +82,9 @@
   .calendar-grid .cal-block { background: #eef6ff; border-left: 3px solid #0d6efd; }
   .status-booked { background: #fff3cd !important; border-left-color: #ffca2c !important; }
   .status-checked_in { background: #d1e7dd !important; border-left-color: #198754 !important; }
+  /* Cleaning state after check-out */
+  .calendar-grid .cal-cleaning { background: #fff1e6; color: #b35c00; text-align: center; }
+  .calendar-grid .cal-cleaning .icon { opacity: .9; }
 </style>
 
 <script>
@@ -266,16 +269,20 @@
       if (!reservationId) return;
       postWithCsrf(`/reservations/${reservationId}/check-out/`).then(ok => {
         if (!ok) { alert('Check-out failed. Please retry.'); return; }
-        // Replace block with an empty cell keeping the same colspan
+        // Replace block with a cleaning cell keeping the same colspan
         const span = td.getAttribute('colspan') || '1';
-        const empty = document.createElement('td');
-        empty.className = 'cal-cell cal-empty';
-        empty.setAttribute('colspan', span);
-        empty.setAttribute('data-room-id', tr.getAttribute('data-room-id') || '');
-        td.replaceWith(empty);
-        // Reattach listeners so range selection still works
-        if (window._attachEmptyCellListeners) {
-          window._attachEmptyCellListeners(empty);
+        const cleaning = document.createElement('td');
+        cleaning.className = 'cal-cell cal-cleaning';
+        cleaning.setAttribute('colspan', span);
+        cleaning.setAttribute('data-room-id', tr.getAttribute('data-room-id') || '');
+        cleaning.innerHTML = '<div class="text-muted"><i class="bi bi-broom icon me-1"></i> Cleaning</div>';
+        td.replaceWith(cleaning);
+        // Update badge to Cleaning
+        const badge = tr.querySelector('th .badge');
+        if (badge) {
+          badge.textContent = 'Cleaning';
+          badge.classList.remove('bg-secondary');
+          badge.classList.add('bg-warning');
         }
       });
     }
@@ -288,10 +295,25 @@
         const badge = tr.querySelector('th .badge');
         if (badge) {
           badge.textContent = 'Available';
+          badge.classList.remove('bg-warning');
+          badge.classList.add('bg-secondary');
           // optional subtle flash
           badge.classList.add('bg-success');
           setTimeout(() => badge.classList.remove('bg-success'), 1000);
         }
+        // Turn any cleaning cells in this row into empty cells
+        const cells = Array.from(tr.querySelectorAll('td.cal-cleaning'));
+        cells.forEach(c => {
+          const span = c.getAttribute('colspan') || '1';
+          const empty = document.createElement('td');
+          empty.className = 'cal-cell cal-empty';
+          empty.setAttribute('colspan', span);
+          empty.setAttribute('data-room-id', tr.getAttribute('data-room-id') || '');
+          c.replaceWith(empty);
+          if (window._attachEmptyCellListeners) {
+            window._attachEmptyCellListeners(empty);
+          }
+        });
       });
     }
 
