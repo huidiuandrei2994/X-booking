@@ -36,13 +36,23 @@ class Room(models.Model):
         1) Room-specific RateSeason covering the date
         2) Room-type RateSeason covering the date
         3) Fallback to room.price_per_night
+
+        Honors RateSeason.apply_on: all/weekdays/weekends.
         """
+        # Determine which apply_on values are valid for this date
+        allowed_apply_on = [RateSeason.ApplyOn.ALL]
+        if d.weekday() < 5:
+            allowed_apply_on.append(RateSeason.ApplyOn.WEEKDAYS)
+        else:
+            allowed_apply_on.append(RateSeason.ApplyOn.WEEKENDS)
+
         # Room-specific season
         season = RateSeason.objects.filter(
             active=True,
             room=self,
             start_date__lte=d,
             end_date__gte=d,
+            apply_on__in=allowed_apply_on,
         ).order_by("-start_date").first()
         if season:
             return season.price
@@ -54,6 +64,7 @@ class Room(models.Model):
             room_type=self.type,
             start_date__lte=d,
             end_date__gte=d,
+            apply_on__in=allowed_apply_on,
         ).order_by("-start_date").first()
         if season:
             return season.price
@@ -65,13 +76,20 @@ class RateSeason(models.Model):
     """
     Seasonal pricing rule. If 'room' is set, it overrides 'room_type' for that room.
     If only 'room_type' is set, it applies to all rooms of that type.
+    'apply_on' controls which days are affected (all/weekdays/weekends).
     """
+    class ApplyOn(models.TextChoices):
+        ALL = "all", "All days"
+        WEEKDAYS = "weekdays", "Weekdays (Mon–Fri)"
+        WEEKENDS = "weekends", "Weekends (Sat–Sun)"
+
     name = models.CharField(max_length=100)
     room = models.ForeignKey("Room", on_delete=models.CASCADE, null=True, blank=True, related_name="seasons")
     room_type = models.CharField(max_length=20, choices=Room.Type.choices, null=True, blank=True)
     start_date = models.DateField()
     end_date = models.DateField()
     price = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
+    apply_on = models.CharField(max_length=10, choices=ApplyOn.choices, default=ApplyOn.ALL)
     active = models.BooleanField(default=True)
 
     class Meta:
@@ -81,7 +99,7 @@ class RateSeason(models.Model):
 
     def __str__(self) -> str:  # pragma: no cover
         target = self.room or self.get_room_type_display() or "All"
-        return f"{self.name} • {target} • {self.start_date} → {self.end_date}"
+        return f"{self.name} • {target} • {self.start_date} → {self.end_date} • {self.get_apply_on_display()}"
 
     def clean(self):
         # Must specify at least one target

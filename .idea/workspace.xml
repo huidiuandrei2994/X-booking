@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul 7-  luram la backend si la functionalitati">
-      <change beforePath="$PROJECT_DIR$/templates/hotellapp/calendar_ui.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/calendar_ui.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hotellapp/revenue_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hotellapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hotellapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

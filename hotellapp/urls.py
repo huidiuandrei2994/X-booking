@@ -10,9 +10,10 @@ from .views import (
     ReservationCheckInView, ReservationCheckOutView, ReservationCancelView, RoomMarkCleanedView,
     InvoiceListView, InvoiceDetailView, InvoicePrintView, InvoicesCsvExportView,
         NightAuditPreviewView, NightAuditCloseView, NightAuditListView, NightAuditDetailView, NightAuditCsvExportView,
-    ReportsDashboardView, ReportOccupancyView, ReportRevenueView, ReportHousekeepingView,
+    ReportsDashboardView, ReportOccupancyView, ReportHousekeepingView,
     AvailabilityAPI, ClientQuickCreateAPI,
 )
+from .revenue_views import ReportRevenueView
 
 urlpatterns = [
     # Home / Calendar
