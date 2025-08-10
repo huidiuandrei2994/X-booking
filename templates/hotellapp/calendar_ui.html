@@ -160,7 +160,7 @@
   }
 
   // Attach events
-  document.querySelectorAll('tbody td.cal-empty').forEach(td => {
+  function attachEmptyCellListeners(td) {
     td.addEventListener('mousedown', (e) => { e.preventDefault(); beginSelection(td); });
     td.addEventListener('mouseenter', () => {
       if (!selecting || !startCell) return;
@@ -174,10 +174,147 @@
       selecting = false;
       startCell = null;
     });
-  });
+  }
+  document.querySelectorAll('tbody td.cal-empty').forEach(attachEmptyCellListeners);
+  // Expose for later dynamic cells
+  window._attachEmptyCellListeners = attachEmptyCellListeners;
+
   document.addEventListener('mouseup', () => {
     selecting = false; startCell = null;
     document.querySelectorAll('tbody tr').forEach(clearHighlights);
+  });
+})();
+</script>
+
+<script>
+// Context menu for right-click actions (Check-in, Check-out, Mark room cleaned) with live UI updates
+(function() {
+  const calendar = document.querySelector('.calendar-grid');
+  if (!calendar) return;
+
+  // Create menu element
+  const menu = document.createElement('div');
+  menu.id = 'cal-ctx-menu';
+  menu.style.cssText = 'position:fixed;display:none;min-width:200px;background:#fff;border:1px solid rgba(0,0,0,.15);border-radius:.5rem;box-shadow:0 .5rem 1rem rgba(0,0,0,.15);z-index:1070;overflow:hidden;';
+  document.body.appendChild(menu);
+
+  function hideMenu() { menu.style.display = 'none'; menu.innerHTML = ''; }
+  function showMenu(x, y, items) {
+    if (!items.length) return;
+    menu.innerHTML = '';
+    items.forEach(({label, onClick}) => {
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = label;
+      a.style.cssText = 'display:block;padding:.5rem .75rem;color:#212529;text-decoration:none;';
+      a.addEventListener('mouseenter', () => a.style.background = '#f8f9fa');
+      a.addEventListener('mouseleave', () => a.style.background = '');
+      a.addEventListener('click', (e) => { e.preventDefault(); hideMenu(); onClick(); });
+      menu.appendChild(a);
+    });
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const rectW = 220, rectH = 40 * items.length;
+    const left = Math.min(x, vw - rectW - 8);
+    const top = Math.min(y, vh - rectH - 8);
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+    menu.style.display = 'block';
+  }
+
+  function getCookie(name) {
+    const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return m ? m.pop() : '';
+  }
+
+  async function postWithCsrf(url) {
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+      });
+      // Django returns 302 -> followed; treat any 200-399 as success
+      return resp.ok || (resp.status >= 200 && resp.status < 400);
+    } catch {
+      return false;
+    }
+  }
+
+  calendar.addEventListener('contextmenu', function(e) {
+    const td = e.target.closest('td,th');
+    if (!td) return;
+    e.preventDefault();
+
+    const tr = td.closest('tr');
+    const roomId = tr ? tr.getAttribute('data-room-id') : null;
+    const isBlock = td.classList.contains('cal-block');
+    const reservationId = isBlock ? td.getAttribute('data-reservation-id') : null;
+    const isBooked = isBlock && td.classList.contains('status-booked');
+    const isCheckedIn = isBlock && td.classList.contains('status-checked_in');
+
+    function doCheckIn() {
+      if (!reservationId) return;
+      postWithCsrf(`/reservations/${reservationId}/check-in/`).then(ok => {
+        if (!ok) { alert('Check-in failed. Please retry.'); return; }
+        // Update UI: booked -> checked_in
+        td.classList.remove('status-booked');
+        td.classList.add('status-checked_in');
+        td.title = (td.title || '').replace(/Booked/i, 'Checked-in');
+      });
+    }
+
+    function doCheckOut() {
+      if (!reservationId) return;
+      postWithCsrf(`/reservations/${reservationId}/check-out/`).then(ok => {
+        if (!ok) { alert('Check-out failed. Please retry.'); return; }
+        // Replace block with an empty cell keeping the same colspan
+        const span = td.getAttribute('colspan') || '1';
+        const empty = document.createElement('td');
+        empty.className = 'cal-cell cal-empty';
+        empty.setAttribute('colspan', span);
+        empty.setAttribute('data-room-id', tr.getAttribute('data-room-id') || '');
+        td.replaceWith(empty);
+        // Reattach listeners so range selection still works
+        if (window._attachEmptyCellListeners) {
+          window._attachEmptyCellListeners(empty);
+        }
+      });
+    }
+
+    function doMarkClean() {
+      if (!roomId) return;
+      postWithCsrf(`/rooms/${roomId}/cleaned/`).then(ok => {
+        if (!ok) { alert('Mark cleaned failed. Please retry.'); return; }
+        // Update UI: change badge text to Available
+        const badge = tr.querySelector('th .badge');
+        if (badge) {
+          badge.textContent = 'Available';
+          // optional subtle flash
+          badge.classList.add('bg-success');
+          setTimeout(() => badge.classList.remove('bg-success'), 1000);
+        }
+      });
+    }
+
+    const items = [];
+    if (reservationId && isBooked) {
+      items.push({ label: 'Check-in', onClick: doCheckIn });
+    }
+    if (reservationId && isCheckedIn) {
+      items.push({ label: 'Check-out', onClick: doCheckOut });
+    }
+    if (roomId) {
+      items.push({ label: 'Mark room cleaned', onClick: doMarkClean });
+    }
+
+    hideMenu();
+    showMenu(e.clientX, e.clientY, items);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (menu.style.display === 'block' && !menu.contains(e.target)) hideMenu();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hideMenu();
   });
 })();
 </script>
