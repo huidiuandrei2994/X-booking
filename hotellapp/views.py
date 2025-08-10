@@ -22,7 +22,7 @@ from .presenters import ReservationPresenter
 
 
 class CalendarView(TemplateView):
-    template_name = "hotellapp/calendar.html"
+    template_name = "hotellapp/calendar_ui.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -480,7 +480,7 @@ class NightAuditPreviewView(TemplateView):
         ).select_related("room", "client")
 
         occupied_rooms_count = active_qs.values("room_id").distinct().count()
-        revenue = sum((r.room.price_per_night for r in active_qs), start=Decimal("0.00"))
+        revenue = sum((r.room.get_price_for_date(audit_date) for r in active_qs), start=Decimal("0.00"))
         occupancy_percent = int(round(occupied_rooms_count / total_rooms * 100))
         adr = (revenue / occupied_rooms_count).quantize(Decimal("0.01")) if occupied_rooms_count else Decimal("0.00")
         revpar = (revenue / total_rooms).quantize(Decimal("0.01"))
@@ -544,7 +544,7 @@ class NightAuditCloseView(View):
             check_out__gt=audit_date,
         ).select_related("room", "client")
         occupied_rooms_count = active_qs.values("room_id").distinct().count()
-        revenue = sum((r.room.price_per_night for r in active_qs), start=Decimal("0.00"))
+        revenue = sum((r.room.get_price_for_date(audit_date) for r in active_qs), start=Decimal("0.00"))
         occupancy_percent = int(round(occupied_rooms_count / total_rooms * 100))
         adr = (revenue / occupied_rooms_count).quantize(Decimal("0.01")) if occupied_rooms_count else Decimal("0.00")
         revpar = (revenue / total_rooms).quantize(Decimal("0.01"))
@@ -647,6 +647,43 @@ class NightAuditCsvExportView(View):
         return response
 
 # API
+@method_decorator(login_required, name="dispatch")
+class ClientQuickCreateAPI(View):
+    """
+    Quick JSON endpoint to create a Client without leaving the current page.
+    Expected POST body (JSON or form-encoded): first_name, last_name (optional), phone (optional), email (optional)
+    Returns: {"id": <int>, "name": "First Last"}
+    """
+    def post(self, request: HttpRequest) -> JsonResponse:
+        # Accept JSON or form-encoded
+        data = {}
+        if request.content_type and "application/json" in request.content_type:
+            try:
+                import json as _json
+                data = _json.loads(request.body.decode() or "{}")
+            except Exception:
+                return JsonResponse({"error": "Invalid JSON payload."}, status=400)
+        else:
+            data = request.POST
+
+        first_name = (data.get("first_name") or "").strip()
+        last_name = (data.get("last_name") or "").strip()
+        phone = (data.get("phone") or "").strip()
+        email = (data.get("email") or "").strip()
+
+        if not first_name:
+            return JsonResponse({"error": "First name is required."}, status=400)
+
+        client = Client.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone or None,
+            email=email or None,
+        )
+        display_name = f"{client.first_name} {client.last_name}".strip()
+        return JsonResponse({"id": client.id, "name": display_name}, status=201)
+
+
 class AvailabilityAPI(View):
     """
     Returns JSON list of available rooms for a given date range and optional type.
@@ -675,9 +712,19 @@ class AvailabilityAPI(View):
         if room_type:
             rooms_qs = rooms_qs.filter(type=room_type)
 
-        rooms = [
-            {"id": r.id, "number": r.number, "type": r.type, "price_per_night": str(r.price_per_night),
-             "status": r.status}
-            for r in rooms_qs.order_by("number")
-        ]
+        nights = (end - start).days
+        rooms = []
+        for r in rooms_qs.order_by("number"):
+            total = Decimal("0.00")
+            for i in range(nights):
+                total += r.get_price_for_date(start + timedelta(days=i))
+            avg = (total / nights).quantize(Decimal("0.01")) if nights else r.price_per_night
+            rooms.append({
+                "id": r.id,
+                "number": r.number,
+                "type": r.type,
+                "price_per_night": str(avg),
+                "total_price": str(total.quantize(Decimal("0.01"))),
+                "status": r.status,
+            })
         return JsonResponse({"start": start.isoformat(), "end": end.isoformat(), "rooms": rooms})

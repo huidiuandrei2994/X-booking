@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Room, Client, Reservation, Invoice, NightAudit
+from .models import Room, Client, Reservation, Invoice, NightAudit, RateSeason
 
 
 @admin.register(Room)
@@ -50,3 +50,11 @@ class NightAuditAdmin(admin.ModelAdmin):
         t = obj.totals or {}
         return t.get("revenue", "0.00")
     get_revenue.short_description = "Revenue"
+
+
+@admin.register(RateSeason)
+class RateSeasonAdmin(admin.ModelAdmin):
+    list_display = ("name", "room", "room_type", "start_date", "end_date", "price", "active")
+    list_filter = ("active", "room_type", "start_date", "end_date")
+    search_fields = ("name",)
+    autocomplete_fields = ("room",)

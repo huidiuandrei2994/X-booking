@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from datetime import date, timedelta
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import F, Q
@@ -28,6 +29,66 @@ class Room(models.Model):
 
     def __str__(self) -> str:  # pragma: no cover
         return f"Room {self.number} - {self.get_type_display()} ({self.get_status_display()})"
+
+    def get_price_for_date(self, d: date) -> Decimal:
+        """
+        Return the nightly price for this room on a given date, using the most specific active season:
+        1) Room-specific RateSeason covering the date
+        2) Room-type RateSeason covering the date
+        3) Fallback to room.price_per_night
+        """
+        # Room-specific season
+        season = RateSeason.objects.filter(
+            active=True,
+            room=self,
+            start_date__lte=d,
+            end_date__gte=d,
+        ).order_by("-start_date").first()
+        if season:
+            return season.price
+
+        # Room-type season
+        season = RateSeason.objects.filter(
+            active=True,
+            room__isnull=True,
+            room_type=self.type,
+            start_date__lte=d,
+            end_date__gte=d,
+        ).order_by("-start_date").first()
+        if season:
+            return season.price
+
+        return self.price_per_night
+
+
+class RateSeason(models.Model):
+    """
+    Seasonal pricing rule. If 'room' is set, it overrides 'room_type' for that room.
+    If only 'room_type' is set, it applies to all rooms of that type.
+    """
+    name = models.CharField(max_length=100)
+    room = models.ForeignKey("Room", on_delete=models.CASCADE, null=True, blank=True, related_name="seasons")
+    room_type = models.CharField(max_length=20, choices=Room.Type.choices, null=True, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["start_date"]
+        verbose_name = "Rate season"
+        verbose_name_plural = "Rate seasons"
+
+    def __str__(self) -> str:  # pragma: no cover
+        target = self.room or self.get_room_type_display() or "All"
+        return f"{self.name} • {target} • {self.start_date} → {self.end_date}"
+
+    def clean(self):
+        # Must specify at least one target
+        if not self.room and not self.room_type:
+            raise ValidationError("Select a room or a room type.")
+        if self.start_date >= self.end_date:
+            raise ValidationError({"end_date": "End date must be after start date."})
 
 
 class Client(models.Model):
@@ -115,9 +176,14 @@ class Invoice(models.Model):
         return f"Invoice #{self.pk or 'new'} for {self.client} ({self.total} {self.currency})"
 
     def compute_total(self) -> Decimal:
+        start = self.reservation.check_in
+        end = self.reservation.check_out
         nights = self.reservation.nights
-        price = self.reservation.room.price_per_night
-        return (Decimal(nights) * price).quantize(Decimal("0.01"))
+        total = Decimal("0.00")
+        for i in range(nights):
+            day = start + timedelta(days=i)
+            total += self.reservation.room.get_price_for_date(day)
+        return total.quantize(Decimal("0.01"))
 
     def save(self, *args, **kwargs):
         # Auto-calculate total if not set or when saving

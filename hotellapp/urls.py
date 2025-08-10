@@ -11,7 +11,7 @@ from .views import (
     InvoiceListView, InvoiceDetailView, InvoicePrintView, InvoicesCsvExportView,
         NightAuditPreviewView, NightAuditCloseView, NightAuditListView, NightAuditDetailView, NightAuditCsvExportView,
     ReportsDashboardView, ReportOccupancyView, ReportRevenueView, ReportHousekeepingView,
-    AvailabilityAPI,
+    AvailabilityAPI, ClientQuickCreateAPI,
 )
 
 urlpatterns = [
@@ -61,5 +61,6 @@ urlpatterns = [
     path("reports/housekeeping/", ReportHousekeepingView.as_view(), name="report_housekeeping"),
 
     # API
+    path("api/clients/quick-add/", ClientQuickCreateAPI.as_view(), name="api_client_quick_add"),
     path("api/availability/", AvailabilityAPI.as_view(), name="api_availability"),
 ]
