@@ -13,11 +13,18 @@ class BootstrapFormMixin:
     def _bootstrapify(self):
         for name, field in self.fields.items():
             widget = field.widget
-            # Skip checkbox/radio; they have their own styles
-            if isinstance(widget, (forms.CheckboxInput, forms.RadioSelect)):
+            existing = widget.attrs.get("class", "").strip()
+
+            # Style checkbox and radio as well, to keep consistent theming
+            if isinstance(widget, forms.CheckboxInput):
+                widget.attrs["class"] = f"{existing} form-check-input".strip()
                 continue
+            if isinstance(widget, forms.RadioSelect):
+                widget.attrs["class"] = f"{existing} form-check-input".strip()
+                continue
+
+            # Selects vs. other inputs
             base_class = "form-select" if isinstance(widget, forms.Select) else "form-control"
-            existing = widget.attrs.get("class", "")
             widget.attrs["class"] = f"{existing} {base_class}".strip()
 
     def __init__(self, *args, **kwargs):
@@ -71,3 +78,28 @@ class ReservationForm(BootstrapFormMixin, forms.ModelForm):
         except ValidationError as e:
             self.add_error(None, e)
         return cleaned
+
+
+# -------- Invoices --------
+from .models import Invoice, InvoiceLine  # noqa: E402 (placed after other imports for patch simplicity)
+
+
+class InvoiceForm(BootstrapFormMixin, forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ["series", "number", "due_date", "payment_method", "currency", "notes"]
+        widgets = {
+            "due_date": forms.DateInput(attrs={"type": "date"}),
+            "notes": forms.Textarea(attrs={"rows": 3}),
+        }
+
+
+class InvoiceLineForm(BootstrapFormMixin, forms.ModelForm):
+    class Meta:
+        model = InvoiceLine
+        fields = ["description", "quantity", "unit_price", "vat_rate"]
+        widgets = {
+            "quantity": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
+            "unit_price": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
+            "vat_rate": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
+        }

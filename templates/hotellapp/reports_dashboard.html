@@ -2,9 +2,11 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2 class="mb-0">Reports</h2>
+  <div class="text-muted small">Overview dashboards for occupancy, revenue, breakfasts and operations.</div>
 </div>
+
 <div class="row g-3">
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="card h-100">
       <div class="card-body">
         <h5 class="card-title">Occupancy</h5>
@@ -13,7 +15,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="card h-100">
       <div class="card-body">
         <h5 class="card-title">Revenue</h5>
@@ -22,7 +24,16 @@
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Breakfast</h5>
+        <p class="card-text text-muted">Counts and revenue by day, room, and client.</p>
+        <a href="{% url 'report_breakfast' %}" class="btn btn-primary">Open</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
     <div class="card h-100">
       <div class="card-body">
         <h5 class="card-title">Housekeeping</h5>

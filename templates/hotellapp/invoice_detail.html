@@ -1,9 +1,15 @@
 {% extends "hotellapp/base.html" %}
 {% block content %}
-<h2 class="d-flex justify-content-between align-items-center">
-  <span>Invoice {{ invoice.series }}-{{ invoice.number|default:invoice.id }}</span>
-  <small class="text-muted">Total: {{ invoice.total }} {{ invoice.currency }}</small>
-</h2>
+<section class="d-flex justify-content-between align-items-center">
+  <div>
+    <h2 class="mb-0">Invoice {{ invoice.series }}-{{ invoice.number|default:invoice.id }}</h2>
+    <div class="text-muted small">Issued on: <span class="badge text-bg-light">{{ invoice.issue_date }}</span></div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'invoice_edit' invoice.pk %}" class="btn btn-outline-primary"><i class="bi bi-pencil-square"></i> Edit</a>
+    <a href="{% url 'invoice_print' invoice.pk %}" class="btn btn-primary"><i class="bi bi-printer"></i> Print</a>
+  </div>
+</section>
 
 <div class="card mt-3">
   <div class="card-body">
@@ -16,7 +22,6 @@
       </div>
       <div class="col-md-6 text-md-end">
         <h5>Invoice</h5>
-        <p class="mb-1"><strong>Date:</strong> {{ invoice.issue_date }}</p>
         <p class="mb-1"><strong>Due date:</strong> {{ invoice.due_date }}</p>
         <p class="mb-1"><strong>Payment:</strong> {{ invoice.get_payment_method_display }}</p>
         <p class="mb-0"><strong>Currency:</strong> {{ invoice.currency }}</p>
@@ -25,7 +30,7 @@
 
     <hr />
     <div class="table-responsive">
-      <table class="table table-striped align-middle">
+      <table class="table table-striped align-middle table-modern">
         <thead>
           <tr>
             <th>Description</th>

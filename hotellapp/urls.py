@@ -15,6 +15,7 @@ from .views import (
 )
 from .revenue_views import ReportRevenueView
 from .breakfast_views import ReportBreakfastView
+from .invoice_views import InvoiceUpdateView
 
 urlpatterns = [
     # Home / Calendar
@@ -46,6 +47,7 @@ urlpatterns = [
     # Invoices
     path("invoices/", InvoiceListView.as_view(), name="invoice_list"),
     path("invoices/<int:pk>/", InvoiceDetailView.as_view(), name="invoice_detail"),
+    path("invoices/<int:pk>/edit/", InvoiceUpdateView.as_view(), name="invoice_edit"),
     path("invoices/<int:pk>/print/", InvoicePrintView.as_view(), name="invoice_print"),
     path("invoices/export/csv/", InvoicesCsvExportView.as_view(), name="invoices_export_csv"),
 
