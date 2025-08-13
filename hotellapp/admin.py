@@ -47,10 +47,11 @@ class InvoiceLineInline(admin.TabularInline):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ("get_number", "client", "reservation", "issue_date", "due_date", "payment_method", "total", "currency")
-    list_filter = ("currency", "issue_date", "payment_method")
-    search_fields = ("client__first_name", "client__last_name", "series", "number")
+    list_display = ("get_number", "client", "reservation", "issue_date", "due_date", "payment_method", "total", "currency", "locked")
+    list_filter = ("currency", "issue_date", "payment_method", "locked")
+    search_fields = ("client__first_name", "client__last_name", "series", "number", "billing_name", "billing_tax_id")
     inlines = [InvoiceLineInline]
+    readonly_fields = ()
 
     def get_number(self, obj):
         return f"{obj.series}-{obj.number or '—'}"

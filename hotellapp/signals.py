@@ -65,3 +65,16 @@ def _reservation_post_delete(sender, instance: Reservation, **kwargs):
     if not has_checked_in and room.status not in (Room.Status.CLEANING, Room.Status.AVAILABLE):
         room.status = Room.Status.AVAILABLE
         room.save(update_fields=["status"])
+
+
+# When a client is modified, refresh billing snapshot on all unlocked invoices for that client
+from django.db.models.signals import post_save as _post_save  # avoid shadowing above imports
+from .models import Client, Invoice  # re-import safe in Django apps
+
+
+@receiver(_post_save, sender=Client)
+def _client_sync_invoices(sender, instance: Client, **kwargs):
+    invoices = Invoice.objects.filter(client=instance, locked=False)
+    for inv in invoices:
+        inv.fill_billing_from_client(instance)
+        inv.save(update_fields=["billing_name", "billing_tax_id", "billing_address"])

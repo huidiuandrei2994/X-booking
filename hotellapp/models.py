@@ -110,13 +110,25 @@ class RateSeason(models.Model):
 
 
 class Client(models.Model):
+    class BillingType(models.TextChoices):
+        INDIVIDUAL = "individual", "Individual"
+        COMPANY = "company", "Company"
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=30, blank=True, null=True)
+
+    # Billing and address
+    billing_type = models.CharField(max_length=20, choices=BillingType.choices, default=BillingType.INDIVIDUAL)
+    company_name = models.CharField(max_length=255, blank=True, null=True)
+    company_tax_id = models.CharField("Tax ID (CUI/CIF)", max_length=50, blank=True, null=True)
+    company_vat_payer = models.BooleanField(default=False)
+
     address = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
+
     date_of_birth = models.DateField(blank=True, null=True)
     document_id = models.CharField("ID/Passport", max_length=50, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
@@ -190,12 +202,21 @@ class Invoice(models.Model):
 
     reservation = models.OneToOneField(Reservation, on_delete=models.CASCADE, related_name="invoice")
     client = models.ForeignKey(Client, on_delete=models.PROTECT, related_name="invoices")
+
     # Legal/compliance fields
     series = models.CharField(max_length=10, default="XB")
     number = models.PositiveIntegerField(blank=True, null=True)
     issue_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateField(blank=True, null=True)
     payment_method = models.CharField(max_length=20, choices=PaymentMethod.choices, default=PaymentMethod.CASH)
+
+    # Billing snapshot (copied from client at creation; can be edited later)
+    billing_name = models.CharField(max_length=255, blank=True, null=True)
+    billing_tax_id = models.CharField(max_length=50, blank=True, null=True)
+    billing_address = models.CharField(max_length=255, blank=True, null=True)
+
+    # Control
+    locked = models.BooleanField(default=False)
 
     # Totals and misc
     total = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
@@ -219,6 +240,23 @@ class Invoice(models.Model):
         if self.number is None:
             last = Invoice.objects.filter(series=self.series).aggregate(models.Max("number"))["number__max"] or 0
             self.number = int(last) + 1
+
+    def fill_billing_from_client(self, client: Client | None = None):
+        """
+        Populate billing_* from client profile based on billing type.
+        """
+        c = client or self.client
+        if c.billing_type == Client.BillingType.COMPANY and (c.company_name or c.company_tax_id):
+            name = c.company_name or f"{c.first_name} {c.last_name}".strip()
+            tax_id = c.company_tax_id or ""
+        else:
+            name = f"{c.first_name} {c.last_name}".strip()
+            tax_id = c.document_id or ""
+        address_parts = [p for p in [c.address, c.city, c.country] if p]
+        address = ", ".join(address_parts) if address_parts else ""
+        self.billing_name = name
+        self.billing_tax_id = tax_id
+        self.billing_address = address
 
     def build_default_lines(self, overwrite: bool = False):
         """
@@ -288,6 +326,11 @@ class Invoice(models.Model):
                 self.due_date = date.today()
         # Ensure we have a number
         self.assign_sequential_number()
+
+        # On creation, if billing snapshot empty, populate from client
+        if creating and not self.billing_name:
+            self.fill_billing_from_client()
+
         super().save(*args, **kwargs)
 
         # On creation, generate default lines if none exist

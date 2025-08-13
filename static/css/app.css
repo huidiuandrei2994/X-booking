@@ -140,16 +140,37 @@ h1, h2, h3, h4, h5 {
 }
 
 /* Tables */
-.table {
-  color: var(--text-100);
+.table,
+.table tbody,
+.table tr,
+.table td,
+.table th {
+  color: var(--text-100) !important;
+  background-color: transparent; /* remove bootstrap white bg */
 }
 .table thead th {
   background: linear-gradient(90deg, rgba(91,108,255,.9), rgba(155,93,229,.9));
   color: #fff !important;
   border: 0;
 }
+.table a:not(.btn) { color: var(--text-300); }
+.table a:not(.btn):hover { color: var(--text-100); }
 .table-modern tbody tr { transition: background .2s ease; }
 .table-modern tbody tr:hover { background-color: rgba(91,108,255,0.10); }
+
+/* Dark theme striping and borders */
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: rgba(255,255,255,0.04);
+}
+.table-striped > tbody > tr:nth-of-type(even) {
+  background-color: rgba(255,255,255,0.02);
+}
+.table-bordered {
+  border-color: rgba(255,255,255,0.15);
+}
+.table > :not(caption) > * > * {
+  border-color: rgba(255,255,255,0.15);
+}
 
 /* Make "table-light" usable on dark theme */
 .table-light, .table-light > * > tr > th, .table-light > * > tr > td {

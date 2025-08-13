@@ -75,15 +75,41 @@
 </div>
 
 <style>
-  .calendar-grid th, .calendar-grid td { white-space: nowrap; }
+  .calendar-grid th, .calendar-grid td { white-space: nowrap; color: var(--text-100); }
   .calendar-grid .cal-cell { min-width: 110px; height: 48px; position: relative; }
-  .calendar-grid .cal-empty { cursor: crosshair; background: #fafafa; }
-  .calendar-grid .cal-empty.highlight { background: #e7f1ff; }
-  .calendar-grid .cal-block { background: #eef6ff; border-left: 3px solid #0d6efd; }
-  .status-booked { background: #fff3cd !important; border-left-color: #ffca2c !important; }
-  .status-checked_in { background: #d1e7dd !important; border-left-color: #198754 !important; }
+
+  /* Dark theme calendar cells */
+  .calendar-grid .cal-empty {
+    cursor: crosshair;
+    background: rgba(255,255,255,0.04);
+  }
+  .calendar-grid .cal-empty.highlight {
+    background: rgba(91,108,255,0.20);
+  }
+  .calendar-grid .cal-block {
+    background: rgba(91,108,255,0.22);
+    border-left: 3px solid var(--brand-primary);
+    color: #fff;
+  }
+
+  /* Status colors on dark */
+  .status-booked {
+    background: rgba(245,158,11,0.22) !important;     /* amber */
+    border-left-color: #f59e0b !important;
+    color: #fff;
+  }
+  .status-checked_in {
+    background: rgba(22,163,74,0.22) !important;      /* green */
+    border-left-color: #16a34a !important;
+    color: #fff;
+  }
+
   /* Cleaning state after check-out */
-  .calendar-grid .cal-cleaning { background: #fff1e6; color: #b35c00; text-align: center; }
+  .calendar-grid .cal-cleaning {
+    background: rgba(250,204,21,0.25);
+    color: #111827;
+    text-align: center;
+  }
   .calendar-grid .cal-cleaning .icon { opacity: .9; }
 </style>
 
@@ -198,7 +224,7 @@
   // Create menu element
   const menu = document.createElement('div');
   menu.id = 'cal-ctx-menu';
-  menu.style.cssText = 'position:fixed;display:none;min-width:200px;background:#fff;border:1px solid rgba(0,0,0,.15);border-radius:.5rem;box-shadow:0 .5rem 1rem rgba(0,0,0,.15);z-index:1070;overflow:hidden;';
+  menu.style.cssText = 'position:fixed;display:none;min-width:200px;background:rgba(15,23,42,.98);border:1px solid rgba(255,255,255,.12);border-radius:.5rem;box-shadow:0 .5rem 1rem rgba(0,0,0,.35);z-index:1070;overflow:hidden;color:#f8fafc;';
   document.body.appendChild(menu);
 
   function hideMenu() { menu.style.display = 'none'; menu.innerHTML = ''; }
@@ -209,8 +235,8 @@
       const a = document.createElement('a');
       a.href = '#';
       a.textContent = label;
-      a.style.cssText = 'display:block;padding:.5rem .75rem;color:#212529;text-decoration:none;';
-      a.addEventListener('mouseenter', () => a.style.background = '#f8f9fa');
+      a.style.cssText = 'display:block;padding:.5rem .75rem;color:#f8fafc;text-decoration:none;';
+      a.addEventListener('mouseenter', () => a.style.background = 'rgba(255,255,255,0.08)');
       a.addEventListener('mouseleave', () => a.style.background = '');
       a.addEventListener('click', (e) => { e.preventDefault(); hideMenu(); onClick(); });
       menu.appendChild(a);

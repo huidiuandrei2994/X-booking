@@ -44,6 +44,7 @@ class ClientForm(BootstrapFormMixin, forms.ModelForm):
         fields = [
             "first_name", "last_name",
             "email", "phone",
+            "billing_type", "company_name", "company_tax_id", "company_vat_payer",
             "address", "city", "country",
             "date_of_birth", "document_id", "notes",
         ]
@@ -87,7 +88,11 @@ from .models import Invoice, InvoiceLine  # noqa: E402 (placed after other impor
 class InvoiceForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Invoice
-        fields = ["series", "number", "due_date", "payment_method", "currency", "notes"]
+        fields = [
+            "series", "number", "due_date", "payment_method", "currency",
+            "billing_name", "billing_tax_id", "billing_address",
+            "notes",
+        ]
         widgets = {
             "due_date": forms.DateInput(attrs={"type": "date"}),
             "notes": forms.Textarea(attrs={"rows": 3}),
