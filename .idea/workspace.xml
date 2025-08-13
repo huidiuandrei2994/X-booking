@@ -4,11 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul 7-  luram la backend si la functionalitati">
-      <change afterPath="$PROJECT_DIR$/hotellapp/revenue_views.py" afterDir="false" />
+    <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul 9  luram la backend si la functionalitati">
+      <change afterPath="$PROJECT_DIR$/hotellapp/migrations/0006_breakfast_and_invoice_lines.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/icons/xbooking-logo.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hotelapp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotelapp/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hotellapp/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hotellapp/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hotellapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hotellapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/hotellapp/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/hotellapp/invoice_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/invoice_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/hotellapp/invoice_pdf.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/invoice_pdf.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,6 +106,8 @@
       <option name="presentableId" value="Default" />
       <updated>1754762502981</updated>
       <workItem from="1754762503966" duration="2731000" />
+      <workItem from="1754930191458" duration="428000" />
+      <workItem from="1755099799487" duration="2214000" />
     </task>
     <task id="LOCAL-00001" summary="comitul 1 - aproape gata! backend">
       <option name="closed" value="true" />
@@ -148,7 +157,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754859314492</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="comitul 9  luram la backend si la functionalitati">
+      <option name="closed" value="true" />
+      <created>1754861203548</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1754861203548</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -161,6 +178,7 @@
     <MESSAGE value="comitul 4 - momentan gata! backend" />
     <MESSAGE value="comitul 6 -  luram la backend si la functionalitati" />
     <MESSAGE value="comitul 7-  luram la backend si la functionalitati" />
-    <option name="LAST_COMMIT_MESSAGE" value="comitul 7-  luram la backend si la functionalitati" />
+    <MESSAGE value="comitul 9  luram la backend si la functionalitati" />
+    <option name="LAST_COMMIT_MESSAGE" value="comitul 9  luram la backend si la functionalitati" />
   </component>
 </project>

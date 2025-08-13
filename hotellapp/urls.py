@@ -14,6 +14,7 @@ from .views import (
     AvailabilityAPI, ClientQuickCreateAPI,
 )
 from .revenue_views import ReportRevenueView
+from .breakfast_views import ReportBreakfastView
 
 urlpatterns = [
     # Home / Calendar
@@ -59,6 +60,7 @@ urlpatterns = [
     path("reports/", ReportsDashboardView.as_view(), name="reports_dashboard"),
     path("reports/occupancy/", ReportOccupancyView.as_view(), name="report_occupancy"),
     path("reports/revenue/", ReportRevenueView.as_view(), name="report_revenue"),
+    path("reports/breakfast/", ReportBreakfastView.as_view(), name="report_breakfast"),
     path("reports/housekeeping/", ReportHousekeepingView.as_view(), name="report_housekeeping"),
 
     # API

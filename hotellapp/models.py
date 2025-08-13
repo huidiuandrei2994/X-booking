@@ -137,6 +137,9 @@ class Reservation(models.Model):
     check_in = models.DateField()
     check_out = models.DateField()
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.BOOKED)
+    # Breakfast options
+    breakfast_included = models.BooleanField(default=False)
+    breakfast_price = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -180,46 +183,146 @@ class Reservation(models.Model):
 
 
 class Invoice(models.Model):
+    class PaymentMethod(models.TextChoices):
+        CASH = "cash", "Cash"
+        CARD = "card", "Card"
+        TRANSFER = "transfer", "Bank Transfer"
+
     reservation = models.OneToOneField(Reservation, on_delete=models.CASCADE, related_name="invoice")
     client = models.ForeignKey(Client, on_delete=models.PROTECT, related_name="invoices")
+    # Legal/compliance fields
+    series = models.CharField(max_length=10, default="XB")
+    number = models.PositiveIntegerField(blank=True, null=True)
     issue_date = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateField(blank=True, null=True)
+    payment_method = models.CharField(max_length=20, choices=PaymentMethod.choices, default=PaymentMethod.CASH)
+
+    # Totals and misc
     total = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
     currency = models.CharField(max_length=3, default="EUR")
     notes = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ["-issue_date"]
+        constraints = [
+            models.UniqueConstraint(fields=["series", "number"], name="uniq_invoice_series_number"),
+        ]
 
     def __str__(self) -> str:  # pragma: no cover
-        return f"Invoice #{self.pk or 'new'} for {self.client} ({self.total} {self.currency})"
+        label = f"{self.series}-{self.number}" if self.number else f"#{self.pk or 'new'}"
+        return f"Invoice {label} for {self.client} ({self.total} {self.currency})"
 
-    def compute_total(self) -> Decimal:
-        start = self.reservation.check_in
-        end = self.reservation.check_out
-        nights = self.reservation.nights
-        total = Decimal("0.00")
+    def assign_sequential_number(self):
+        """
+        Assign next sequential number within the same series if number is empty.
+        """
+        if self.number is None:
+            last = Invoice.objects.filter(series=self.series).aggregate(models.Max("number"))["number__max"] or 0
+            self.number = int(last) + 1
+
+    def build_default_lines(self, overwrite: bool = False):
+        """
+        Build invoice lines from reservation:
+        - One line per night with nightly price (accommodation).
+        - One line per night for breakfast if included and price > 0.
+        """
+        if not overwrite and self.lines.exists():
+            return
+        if overwrite:
+            self.lines.all().delete()
+
+        res = self.reservation
+        start = res.check_in
+        nights = res.nights
         for i in range(nights):
             day = start + timedelta(days=i)
-            total += self.reservation.room.get_price_for_date(day)
+            price = res.room.get_price_for_date(day)
+            InvoiceLine.objects.create(
+                invoice=self,
+                description=f"Accommodation {res.room.number} — {day.isoformat()}",
+                quantity=Decimal("1.00"),
+                unit_price=price,
+                vat_rate=Decimal("9.00"),  # set per your jurisdiction
+            )
+            if res.breakfast_included and res.breakfast_price and res.breakfast_price > 0:
+                InvoiceLine.objects.create(
+                    invoice=self,
+                    description=f"Breakfast — {day.isoformat()}",
+                    quantity=Decimal("1.00"),
+                    unit_price=res.breakfast_price,
+                    vat_rate=Decimal("9.00"),  # set per your jurisdiction
+                )
+
+    def get_vat_summary(self) -> list[dict]:
+        """
+        Return a list of dicts: [{'vat_rate': Decimal, 'base': Decimal, 'vat': Decimal, 'total': Decimal}, ...]
+        """
+        summary: dict[Decimal, dict] = {}
+        for line in self.lines.all():
+            r = line.vat_rate
+            if r not in summary:
+                summary[r] = {"vat_rate": r, "base": Decimal("0.00"), "vat": Decimal("0.00"), "total": Decimal("0.00")}
+            summary[r]["base"] += line.total_excl_vat
+            summary[r]["vat"] += line.vat_amount
+            summary[r]["total"] += line.total
+        # Quantize
+        for v in summary.values():
+            v["base"] = v["base"].quantize(Decimal("0.01"))
+            v["vat"] = v["vat"].quantize(Decimal("0.01"))
+            v["total"] = v["total"].quantize(Decimal("0.01"))
+        return sorted(summary.values(), key=lambda x: x["vat_rate"])
+
+    def compute_total(self) -> Decimal:
+        total = Decimal("0.00")
+        for line in self.lines.all():
+            total += line.total
         return total.quantize(Decimal("0.01"))
 
     def save(self, *args, **kwargs):
-        # Auto-calculate total if not set or when saving
-        self.total = self.compute_total()
+        creating = self.pk is None
+        # Default due date to today if missing; adjust as needed (e.g., +5/14 days)
+        if self.due_date is None:
+            try:
+                self.due_date = timezone.localdate()
+            except Exception:
+                self.due_date = date.today()
+        # Ensure we have a number
+        self.assign_sequential_number()
         super().save(*args, **kwargs)
+
+        # On creation, generate default lines if none exist
+        if creating and not self.lines.exists():
+            self.build_default_lines(overwrite=True)
+
+        # Update total from lines
+        new_total = self.compute_total()
+        if new_total != self.total:
+            Invoice.objects.filter(pk=self.pk).update(total=new_total)
+            self.total = new_total  # keep instance in sync
 
     def as_dict(self) -> dict:
         return {
             "invoice_id": self.pk,
+            "series": self.series,
+            "number": self.number,
             "issue_date": self.issue_date,
+            "due_date": self.due_date.isoformat() if self.due_date else None,
             "client": f"{self.client.first_name} {self.client.last_name}",
             "room": f"{self.reservation.room.number} - {self.reservation.room.get_type_display()}",
             "check_in": self.reservation.check_in.isoformat(),
             "check_out": self.reservation.check_out.isoformat(),
             "nights": self.reservation.nights,
-            "price_per_night": str(self.reservation.room.price_per_night),
-            "total": str(self.total),
             "currency": self.currency,
+            "total": str(self.total),
+            "vat_summary": [
+                {
+                    "vat_rate": str(item["vat_rate"]),
+                    "base": str(item["base"]),
+                    "vat": str(item["vat"]),
+                    "total": str(item["total"]),
+                }
+                for item in self.get_vat_summary()
+            ],
         }
 
     def render_pdf(self):
@@ -242,6 +345,36 @@ class Invoice(models.Model):
         Keep this method returning an HttpResponse for direct download when you wire it up.
         """
         raise NotImplementedError("PDF generation not implemented. See docstring for guidance.")
+
+
+class InvoiceLine(models.Model):
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="lines")
+    description = models.CharField(max_length=200)
+    quantity = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("1.00"))
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
+    vat_rate = models.DecimalField(max_digits=4, decimal_places=2, default=Decimal("0.00"))  # e.g., 19.00, 9.00
+    total_excl_vat = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
+    vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):  # pragma: no cover
+        return f"{self.description} x {self.quantity} @ {self.unit_price}"
+
+    def compute(self):
+        base = (self.quantity * self.unit_price).quantize(Decimal("0.01"))
+        vat = (base * self.vat_rate / Decimal("100")).quantize(Decimal("0.01"))
+        total = (base + vat).quantize(Decimal("0.01"))
+        return base, vat, total
+
+    def save(self, *args, **kwargs):
+        base, vat, total = self.compute()
+        self.total_excl_vat = base
+        self.vat_amount = vat
+        self.total = total
+        super().save(*args, **kwargs)
 
 
 class NightAudit(models.Model):

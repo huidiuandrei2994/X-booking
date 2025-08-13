@@ -1,26 +1,110 @@
-:root {
-  --app-bg: #f6f7fb;
-  --text-muted: #6c757d;
-  --status-booked: #0d6efd;       /* primary */
-  --status-checked-in: #198754;   /* success */
-  --status-checked-out: #6f42c1;  /* purple */
-  --status-canceled: #dc3545;     /* danger */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-  --room-available: #20c997; /* teal */
-  --room-occupied: #fd7e14;  /* orange */
-  --room-cleaning: #ffc107;  /* yellow */
+:root {
+  /* Brand palette */
+  --brand-primary: #5b6cff;  /* indigo */
+  --brand-secondary: #9b5de5; /* purple */
+  --brand-accent: #00d4ff;   /* cyan */
+  --brand-success: #22c55e;
+  --brand-danger: #ef4444;
+
+  /* Legacy mappings for statuses */
+  --status-booked: var(--brand-primary);
+  --status-checked-in: #198754;
+  --status-checked-out: #6f42c1;
+  --status-canceled: #dc3545;
+
+  --room-available: #20c997;
+  --room-occupied: #fd7e14;
+  --room-cleaning: #ffc107;
+
+  --text-muted: #6b7280;
+  --surface: #52d54e;
+  --border: rgba(0,0,0,.06);
+}
+
+html, body {
+  height: 100%;
 }
 
 body {
-  background: var(--app-bg);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  background:
+    radial-gradient(1200px 600px at 0% 0%, rgba(155,93,229,.12), transparent 40%),
+    radial-gradient(1200px 600px at 100% 100%, rgba(0,212,255,.12), transparent 40%),
+    #3ad879;
+  color: #0f172a;
 }
 
+/* Brand accents */
+.brand-gradient {
+  background: linear-gradient(45deg, var(--brand-primary), var(--brand-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Navbar glass effect */
+.navbar-glass {
+  background: rgba(83, 198, 93, 0.8) !important;
+  backdrop-filter: saturate(180%) blur(10px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 6px 24px rgba(16, 24, 40, .06);
+}
+.navbar-glass .nav-link {
+  border-radius: .5rem;
+  padding: .4rem .75rem;
+}
+.navbar-glass .nav-link.active {
+  background: rgba(91,108,255,.12);
+  color: var(--brand-primary) !important;
+}
+
+/* Cards */
+.card {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(21,24,56,.06);
+}
+.card-header {
+  border-bottom-color: var(--border);
+}
+
+/* Buttons */
+.btn-primary {
+  --bs-btn-bg: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-bg: linear-gradient(90deg, var(--brand-secondary), var(--brand-primary));
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-focus-shadow-rgb: 91,108,255;
+  box-shadow: 0 8px 16px rgba(91,108,255,.25);
+  border: none;
+}
+.btn-outline-primary {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+.btn-outline-primary:hover {
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Tables */
+.table thead th {
+  background: #4fbc2e;
+}
 .table-modern tbody tr:hover {
   background-color: rgba(13,110,253,.03);
 }
 
+/* Alerts */
+.alert { border-radius: .75rem; }
+
+/* Badges */
 .badge.status-badge {
-  color: #fff;
+  color: #278723;
   font-weight: 600;
   border-radius: 999px;
   padding: .4rem .6rem;
@@ -40,7 +124,7 @@ body {
 .block {
   border-radius: 999px;
   padding: .35rem .6rem;
-  color: #fff;
+  color: #a32929;
   font-weight: 600;
   box-shadow: 0 2px 6px rgba(0,0,0,.08);
 }
@@ -48,7 +132,4 @@ body {
 .block.checked_in { background-color: var(--status-checked-in); }
 .block_text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .room-col { width: 220px; text-align: left !important; }
-.cell-empty { background: #f8f9fa; }
-
-/* Cards & alerts */
-.alert { border-radius: .75rem; }
+.cell-empty { background: #276db1; }

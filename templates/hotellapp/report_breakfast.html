@@ -1,0 +1,111 @@
+{% extends "hotellapp/base.html" %}
+{% block content %}
+<h2 class="d-flex justify-content-between align-items-center">
+  <span>Breakfast Report</span>
+  <small class="text-muted">Period: {{ start }} – {{ end }}</small>
+</h2>
+
+<form method="get" class="row gy-2 gx-2 align-items-end mb-3">
+  <div class="col-auto">
+    <label class="form-label">Start</label>
+    <input type="date" name="start" value="{{ start|date:'Y-m-d' }}" class="form-control" />
+  </div>
+  <div class="col-auto">
+    <label class="form-label">End</label>
+    <input type="date" name="end" value="{{ end|date:'Y-m-d' }}" class="form-control" />
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-primary"><i class="bi bi-filter"></i> Filter</button>
+  </div>
+</form>
+
+<ul class="nav nav-tabs" role="tablist">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#by-day" type="button" role="tab">By day</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#by-room" type="button" role="tab">By room</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#by-client" type="button" role="tab">By client</button></li>
+</ul>
+
+<div class="tab-content pt-3">
+  <div class="tab-pane fade show active" id="by-day" role="tabpanel">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th class="text-end">Breakfasts</th>
+            <th class="text-end">Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr>
+              <td>{{ r.date }}</td>
+              <td class="text-end">{{ r.count }}</td>
+              <td class="text-end">{{ r.revenue }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="text-center text-muted">No data for the selected range.</td></tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="table-light">
+            <th>Total</th>
+            <th class="text-end">{{ total_count }}</th>
+            <th class="text-end">{{ total_revenue }}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="by-room" role="tabpanel">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Room</th>
+            <th class="text-end">Breakfasts</th>
+            <th class="text-end">Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in by_room %}
+            <tr>
+              <td>{{ r.room }}</td>
+              <td class="text-end">{{ r.count }}</td>
+              <td class="text-end">{{ r.revenue }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="text-center text-muted">No data.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="by-client" role="tabpanel">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Client</th>
+            <th class="text-end">Breakfasts</th>
+            <th class="text-end">Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in by_client %}
+            <tr>
+              <td>{{ r.client }}</td>
+              <td class="text-end">{{ r.count }}</td>
+              <td class="text-end">{{ r.revenue }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="text-center text-muted">No data.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

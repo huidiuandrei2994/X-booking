@@ -49,11 +49,12 @@ class ClientForm(BootstrapFormMixin, forms.ModelForm):
 class ReservationForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Reservation
-        fields = ["client", "room", "check_in", "check_out"]
+        fields = ["client", "room", "check_in", "check_out", "breakfast_included", "breakfast_price"]
 
         widgets = {
             "check_in": forms.DateInput(attrs={"type": "date"}),
             "check_out": forms.DateInput(attrs={"type": "date"}),
+            "breakfast_price": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
         }
 
     def clean(self):
