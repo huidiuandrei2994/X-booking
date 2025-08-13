@@ -14,8 +14,8 @@
   --bg-900: #0f172a;
   --bg-800: #1e293b;
   --text-100: #ffffff;  /* Force base text to true white */
-  --text-300: #e5e7eb;
-  --text-muted: #cbd5e1; /* brighter muted for better contrast on dark */
+  --text-300: #1e50af;
+  --text-muted: #000000; /* brighter muted for better contrast on dark */
 
   /* Status colors */
   --status-booked: var(--brand-primary);
@@ -287,13 +287,126 @@ footer { color: var(--text-muted); }
   .navbar-glass .nav-link { padding: .5rem .75rem; }
 }
 
+/* Modals (dark theme) */
+.modal .modal-dialog .modal-content,
+.modal .modal-content {
+  background: var(--surface) !important;
+  color: var(--text-100) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: .9rem;
+  backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: 0 16px 48px rgba(0,0,0,.45);
+}
+.modal .modal-header,
+.modal .modal-footer {
+  background: transparent !important;
+  border-color: var(--border) !important;
+  color: var(--text-100) !important;
+}
+.modal .modal-title { color: var(--text-100) !important; }
+.modal .modal-body {
+  background: transparent !important;
+  color: var(--text-100) !important;
+}
+.modal .btn-close {
+  filter: invert(1) grayscale(100%);
+  opacity: .85;
+}
+.modal .btn-close:hover { opacity: 1; }
+.modal-backdrop.show {
+  background-color: #0f172a;
+  opacity: .6;
+}
+
+/* Forms inside modal (force dark theme) */
+.modal label,
+.modal .form-label,
+.modal .form-text { color: var(--text-100) !important; }
+.modal .form-control,
+.modal .form-select {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-100) !important;
+  border-radius: .7rem;
+}
+.modal .input-group-text {
+  background: rgba(255,255,255,0.08) !important;
+  color: var(--text-100) !important;
+  border: 1px solid var(--border) !important;
+}
+.modal .form-control::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 1 !important;
+}
+
+/* Dropdowns in modals (autocomplete/select) */
+.modal .dropdown-menu {
+  background: var(--surface-strong) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-100) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.35);
+}
+.modal .dropdown-item { color: var(--text-100) !important; }
+.modal .dropdown-item:hover,
+.modal .dropdown-item:focus {
+  background: rgba(255,255,255,.10) !important;
+  color: #fff !important;
+}
+
+/* Force dark for common white/light utilities inside modal */
+.modal .bg-white,
+.modal .bg-light,
+.modal .card,
+.modal .card-header,
+.modal .card-body,
+.modal .card-footer,
+.modal .table,
+.modal .table > :not(caption) > * > *,
+.modal .list-group,
+.modal .list-group-item {
+  background-color: rgba(255,255,255,0.06) !important;
+  color: var(--text-100) !important;
+  border-color: var(--border) !important;
+}
+
+/* Make modal forms look identical with page forms */
+.modal .mb-3,
+.modal .form-group { margin-bottom: .9rem !important; }
+.modal .form-label { font-weight: 600; letter-spacing: .2px; }
+.modal .asteriskField,
+.modal .required-asterisk { color: var(--brand-danger) !important; } /* crispy/forms asterisk */
+.modal .helptext,
+.modal .form-text { color: var(--text-muted) !important; }
+
+/* Footer actions unified */
+.modal .modal-footer { gap: .5rem; }
+.modal .modal-footer .btn { border-radius: .7rem; }
+.modal .modal-footer .btn-primary {
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary)) !important;
+  border: 0 !important;
+  color: #fff !important;
+  box-shadow: 0 8px 20px rgba(91,108,255,0.25);
+}
+.modal .modal-footer .btn-outline-secondary,
+.modal .modal-footer .btn-secondary {
+  background: transparent !important;
+  color: var(--text-100) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Inputs alignment in modal */
+.modal .input-group > .form-control,
+.modal .form-control, .modal .form-select {
+  height: 2.6rem;
+}
+
 /* =========================
    Invoice layout (screen)
    ========================= */
 .invoice-sheet {
   max-width: 820px; /* ~ A4 width with margins */
   margin: 2rem auto;
-  background: #ffffff;
+  background: #ff0000;
   color: #0f172a;
   border-radius: .75rem;
   box-shadow: 0 12px 32px rgba(0,0,0,.25);

@@ -13,7 +13,7 @@ from .views import (
     ReportsDashboardView, ReportOccupancyView, ReportHousekeepingView,
     AvailabilityAPI, ClientQuickCreateAPI,
 )
-from .revenue_views import ReportRevenueView
+from .revenue_views import ReportRevenueView, ReportKPIView
 from .breakfast_views import ReportBreakfastView
 from .invoice_views import InvoiceUpdateView
 
@@ -62,6 +62,7 @@ urlpatterns = [
     path("reports/", ReportsDashboardView.as_view(), name="reports_dashboard"),
     path("reports/occupancy/", ReportOccupancyView.as_view(), name="report_occupancy"),
     path("reports/revenue/", ReportRevenueView.as_view(), name="report_revenue"),
+    path("reports/kpi/", ReportKPIView.as_view(), name="report_kpi"),
     path("reports/breakfast/", ReportBreakfastView.as_view(), name="report_breakfast"),
     path("reports/housekeeping/", ReportHousekeepingView.as_view(), name="report_housekeeping"),
 

@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul 12 frontend time!" />
+    <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul 13 frontend time!">
+      <change afterPath="$PROJECT_DIR$/templates/hotellapp/report_kpi.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hotellapp/revenue_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/revenue_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hotellapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/hotellapp/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/hotellapp/calendar.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/hotellapp/client_confirm_delete.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/client_confirm_delete.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/hotellapp/reservation_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/reservation_form.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -81,8 +92,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.439" />
-        <option value="bundled-python-sdk-b3ae9b5d7125-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.439" />
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.515" />
+        <option value="bundled-python-sdk-7e47963ff851-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.515" />
       </set>
     </attachedChunks>
   </component>
@@ -95,7 +106,8 @@
       <updated>1754762502981</updated>
       <workItem from="1754762503966" duration="2731000" />
       <workItem from="1754930191458" duration="428000" />
-      <workItem from="1755099799487" duration="4925000" />
+      <workItem from="1755099799487" duration="7719000" />
+      <workItem from="1755114144122" duration="1687000" />
     </task>
     <task id="LOCAL-00001" summary="comitul 1 - aproape gata! backend">
       <option name="closed" value="true" />
@@ -185,7 +197,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755104384516</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="comitul 13 frontend time!">
+      <option name="closed" value="true" />
+      <created>1755104960012</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1755104960012</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -202,6 +222,7 @@
     <MESSAGE value="comitul 10 luram la backend si la functionalitati + frontejnd" />
     <MESSAGE value="comitul 11 frontend time!" />
     <MESSAGE value="comitul 12 frontend time!" />
-    <option name="LAST_COMMIT_MESSAGE" value="comitul 12 frontend time!" />
+    <MESSAGE value="comitul 13 frontend time!" />
+    <option name="LAST_COMMIT_MESSAGE" value="comitul 13 frontend time!" />
   </component>
 </project>

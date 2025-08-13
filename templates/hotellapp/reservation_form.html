@@ -2,197 +2,210 @@
 {% block content %}
 <h2>{{ view.object|default_if_none:"Add Reservation" }}</h2>
 <form method="post" novalidate>
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  <div class="alert alert-info">Tip: select dates to filter available rooms automatically.</div>
-  <div class="row g-3">
-    {% for field in form %}
-      <div class="col-md-6">
-        <label class="form-label">{{ field.label }}</label>
-        {{ field }}
-        {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
-      </div>
-    {% endfor %}
-  </div>
-  <div class="mt-3">
-    <button class="btn btn-primary" type="submit">Save</button>
-    <a class="btn btn-outline-secondary" href="{% url 'reservation_list' %}">Cancel</a>
-  </div>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="alert alert-info">
+        Tip: select dates to filter available rooms automatically.
+    </div>
+    <div class="row g-3">
+        {% for field in form %}
+        <div class="col-md-6">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="mt-3">
+        <button class="btn btn-primary" type="submit">Save</button>
+        <a class="btn btn-outline-secondary" href="{% url 'reservation_list' %}">Cancel</a>
+    </div>
 </form>
 
 <script>
 (function() {
-  const roomSelect = document.getElementById('id_room');
-  const clientSelect = document.getElementById('id_client');
-  const ci = document.getElementById('id_check_in');
-  const co = document.getElementById('id_check_out');
-  const availUrl = "{% url 'api_availability' %}";
-  const clientApiUrl = "{% url 'api_client_quick_add' %}";
-  const info = document.createElement('div');
-  info.className = 'form-text';
-  if (roomSelect && roomSelect.parentElement) {
-    roomSelect.parentElement.appendChild(info);
-  }
+    const roomSelect = document.getElementById('id_room');
+    const clientSelect = document.getElementById('id_client');
+    const ci = document.getElementById('id_check_in');
+    const co = document.getElementById('id_check_out');
+    const availUrl = "{% url 'api_availability' %}";
+    const clientApiUrl = "{% url 'api_client_quick_add' %}";
+    const info = document.createElement('div');
+    info.className = 'form-text';
 
-  function daysBetween(a, b) {
-    try {
-      const ai = new Date(a), bi = new Date(b);
-      return Math.round((bi - ai) / (1000*60*60*24));
-    } catch { return 0; }
-  }
+    if (roomSelect && roomSelect.parentElement) {
+        roomSelect.parentElement.appendChild(info);
+    }
 
-  async function refreshRooms() {
-    const start = ci?.value, end = co?.value;
-    if (!start || !end) {
-      if (info) info.textContent = 'Select check-in and check-out to see available rooms.';
-      return;
-    }
-    if (start >= end || daysBetween(start, end) <= 0) {
-      if (info) info.textContent = 'End date must be after start date.';
-      return;
-    }
-    if (info) info.textContent = 'Checking availability...';
-    try {
-      const resp = await fetch(`${availUrl}?start=${start}&end=${end}`);
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || 'Error');
-      const selected = roomSelect?.value;
-      if (roomSelect) {
-        roomSelect.innerHTML = '';
-        data.rooms.forEach(r => {
-          const opt = document.createElement('option');
-          opt.value = r.id;
-          opt.text = `${r.number} (${r.type}) - ${r.price_per_night}`;
-          roomSelect.add(opt);
-        });
-        if (selected && [...roomSelect.options].some(o => o.value === selected)) {
-          roomSelect.value = selected;
+    function daysBetween(a, b) {
+        try {
+            const ai = new Date(a), bi = new Date(b);
+            return Math.round((bi - ai) / (1000 * 60 * 60 * 24));
+        } catch {
+            return 0;
         }
-      }
-      if (info) info.textContent = `${data.rooms.length} rooms available`;
-    } catch (e) {
-      if (info) info.textContent = 'Availability check failed.';
-    }
-  }
-
-  ci?.addEventListener('change', refreshRooms);
-  co?.addEventListener('change', refreshRooms);
-  if (ci?.value && co?.value) refreshRooms();
-
-  // Quick Add Client popup
-  function getCookie(name) {
-    const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-    return m ? m.pop() : '';
-  }
-
-  if (clientSelect) {
-    const wrapper = clientSelect.parentElement;
-    const actions = document.createElement('div');
-    actions.className = 'mt-1';
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'btn btn-sm btn-outline-secondary';
-    btn.innerHTML = '<i class="bi bi-person-plus"></i> Add new client';
-    actions.appendChild(btn);
-    wrapper.appendChild(actions);
-
-    // Popup UI
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:1050;';
-    const dialog = document.createElement('div');
-    dialog.style.cssText = 'position:fixed;left:50%;top:20%;transform:translateX(-50%);background:#fff;min-width:360px;max-width:90vw;border-radius:.5rem;box-shadow:0 1rem 3rem rgba(0,0,0,.175);z-index:1060;';
-    dialog.innerHTML = `
-      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
-        <strong>Add Client</strong>
-        <button type="button" class="btn-close" aria-label="Close"></button>
-      </div>
-      <div class="p-3">
-        <div class="mb-2">
-          <label class="form-label">First name<span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="qa_first_name" />
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Last name</label>
-          <input type="text" class="form-control" id="qa_last_name" />
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Phone</label>
-          <input type="text" class="form-control" id="qa_phone" />
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control" id="qa_email" />
-        </div>
-        <div class="text-danger small" id="qa_error" style="display:none;"></div>
-      </div>
-      <div class="p-3 border-top d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-outline-secondary btn-cancel">Cancel</button>
-        <button type="button" class="btn btn-primary btn-save">Save</button>
-      </div>
-    `;
-    document.body.appendChild(overlay);
-    document.body.appendChild(dialog);
-
-    function openPopup() {
-      overlay.style.display = 'block';
-      dialog.style.display = 'block';
-      dialog.querySelector('#qa_first_name').focus();
-      dialog.querySelector('#qa_error').style.display = 'none';
-    }
-    function closePopup() {
-      overlay.style.display = 'none';
-      dialog.style.display = 'none';
     }
 
-    overlay.addEventListener('click', closePopup);
-    dialog.querySelector('.btn-close').addEventListener('click', closePopup);
-    dialog.querySelector('.btn-cancel').addEventListener('click', closePopup);
-    btn.addEventListener('click', openPopup);
-
-    async function saveClient() {
-      const first_name = dialog.querySelector('#qa_first_name').value.trim();
-      const last_name = dialog.querySelector('#qa_last_name').value.trim();
-      const phone = dialog.querySelector('#qa_phone').value.trim();
-      const email = dialog.querySelector('#qa_email').value.trim();
-      const errorBox = dialog.querySelector('#qa_error');
-
-      if (!first_name) {
-        errorBox.textContent = 'First name is required.';
-        errorBox.style.display = 'block';
-        return;
-      }
-      errorBox.style.display = 'none';
-
-      try {
-        const resp = await fetch(clientApiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-          },
-          body: JSON.stringify({ first_name, last_name, phone, email })
-        });
-        const data = await resp.json();
-        if (!resp.ok) {
-          throw new Error(data.error || 'Failed to create client.');
+    async function refreshRooms() {
+        const start = ci?.value, end = co?.value;
+        if (!start || !end) {
+            info.textContent = 'Select check-in and check-out to see available rooms.';
+            return;
         }
-        // Add to select and select it
-        const opt = new Option(data.name, data.id, true, true);
-        clientSelect.add(opt);
-        clientSelect.dispatchEvent(new Event('change', { bubbles: true }));
-        closePopup();
-      } catch (e) {
-        errorBox.textContent = e.message || 'Failed to create client.';
-        errorBox.style.display = 'block';
-      }
+        if (start >= end || daysBetween(start, end) <= 0) {
+            info.textContent = 'End date must be after start date.';
+            return;
+        }
+        info.textContent = 'Checking availability...';
+        try {
+            const resp = await fetch(`${availUrl}?start=${start}&end=${end}`);
+            const data = await resp.json();
+            if (!resp.ok) throw new Error(data.error || 'Error');
+
+            const selected = roomSelect?.value;
+            if (roomSelect) {
+                roomSelect.innerHTML = '';
+                data.rooms.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r.id;
+                    opt.text = `${r.number} (${r.type}) - ${r.price_per_night}`;
+                    roomSelect.add(opt);
+                });
+                if (selected && [...roomSelect.options].some(o => o.value === selected)) {
+                    roomSelect.value = selected;
+                }
+            }
+            info.textContent = `${data.rooms.length} rooms available`;
+        } catch (e) {
+            info.textContent = 'Availability check failed.';
+        }
     }
 
-    dialog.querySelector('.btn-save').addEventListener('click', saveClient);
-    dialog.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closePopup();
-      if (e.key === 'Enter') { e.preventDefault(); saveClient(); }
-    });
-  }
+    ci?.addEventListener('change', refreshRooms);
+    co?.addEventListener('change', refreshRooms);
+    if (ci?.value && co?.value) refreshRooms();
+
+    // Quick Add Client
+    function getCookie(name) {
+        const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return m ? m.pop() : '';
+    }
+
+    if (clientSelect) {
+        const wrapper = clientSelect.parentElement;
+        const actions = document.createElement('div');
+        actions.className = 'mt-1';
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-sm btn-outline-secondary';
+        btn.innerHTML = '<i class="bi bi-person-plus"></i> Add new client';
+        actions.appendChild(btn);
+        wrapper.appendChild(actions);
+
+        // Overlay & Dialog
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:1050;';
+
+        const dialog = document.createElement('div');
+        dialog.style.cssText = 'position:fixed;left:50%;top:20%;transform:translateX(-50%);background:#fff;min-width:360px;max-width:90vw;border-radius:.5rem;box-shadow:0 1rem 3rem rgba(0,0,0,.175);z-index:1060;';
+
+        dialog.innerHTML = `
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                <strong>Add Client</strong>
+                <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="p-3">
+                <div class="mb-2">
+                    <label class="form-label">First name<span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="qa_first_name" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Last name</label>
+                    <input type="text" class="form-control" id="qa_last_name" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="qa_phone" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="qa_email" />
+                </div>
+                <div class="text-danger small" id="qa_error" style="display:none;"></div>
+            </div>
+            <div class="p-3 border-top d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-save">Save</button>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        document.body.appendChild(dialog);
+
+        function openPopup() {
+            overlay.style.display = 'block';
+            dialog.style.display = 'block';
+            dialog.querySelector('#qa_first_name').focus();
+            dialog.querySelector('#qa_error').style.display = 'none';
+        }
+        function closePopup() {
+            overlay.style.display = 'none';
+            dialog.style.display = 'none';
+        }
+
+        overlay.addEventListener('click', closePopup);
+        dialog.querySelector('.btn-close').addEventListener('click', closePopup);
+        dialog.querySelector('.btn-cancel').addEventListener('click', closePopup);
+        btn.addEventListener('click', openPopup);
+
+        async function saveClient() {
+            const first_name = dialog.querySelector('#qa_first_name').value.trim();
+            const last_name = dialog.querySelector('#qa_last_name').value.trim();
+            const phone = dialog.querySelector('#qa_phone').value.trim();
+            const email = dialog.querySelector('#qa_email').value.trim();
+            const errorBox = dialog.querySelector('#qa_error');
+
+            if (!first_name) {
+                errorBox.textContent = 'First name is required.';
+                errorBox.style.display = 'block';
+                return;
+            }
+            errorBox.style.display = 'none';
+
+            try {
+                const resp = await fetch(clientApiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ first_name, last_name, phone, email })
+                });
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.error || 'Failed to create client.');
+
+                const opt = new Option(data.name, data.id, true, true);
+                clientSelect.add(opt);
+                clientSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                closePopup();
+            } catch (e) {
+                errorBox.textContent = e.message || 'Failed to create client.';
+                errorBox.style.display = 'block';
+            }
+        }
+
+        dialog.querySelector('.btn-save').addEventListener('click', saveClient);
+        dialog.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePopup();
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveClient();
+            }
+        });
+    }
 })();
 </script>
 {% endblock %}

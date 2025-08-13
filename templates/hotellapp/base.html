@@ -33,6 +33,7 @@
             <li class="nav-item"><a class="nav-link {% if current in 'invoice_list invoice_detail' %}active{% endif %}" href="{% url 'invoice_list' %}"><i class="bi bi-receipt me-1"></i>Invoices</a></li>
             <li class="nav-item"><a class="nav-link {% if current in 'night_audit night_audit_list night_audit_detail' %}active{% endif %}" href="{% url 'night_audit' %}"><i class="bi bi-moon-stars me-1"></i>Night Audit</a></li>
             <li class="nav-item"><a class="nav-link {% if current in 'reports_dashboard report_occupancy report_revenue report_breakfast report_housekeeping' %}active{% endif %}" href="{% url 'reports_dashboard' %}"><i class="bi bi-graph-up-arrow me-1"></i>Reports</a></li>
+            <li class="nav-item"><a class="nav-link {% if current == 'report_kpi' %}active{% endif %}" href="{% url 'report_kpi' %}"><i class="bi bi-speedometer2 me-1"></i>KPI</a></li>
           </ul>
           {% endwith %}
         </div>
