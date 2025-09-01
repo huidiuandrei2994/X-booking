@@ -5,21 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul 13 frontend time!">
-      <change afterPath="$PROJECT_DIR$/templates/hotellapp/report_kpi.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/css/theme_modern.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/hotelapp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/hotelapp.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hotellapp/revenue_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/revenue_views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hotellapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotellapp/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/app.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/hotellapp/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/hotellapp/calendar.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/hotellapp/client_confirm_delete.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/client_confirm_delete.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/hotellapp/invoice_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/invoice_list.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/hotellapp/reservation_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/reservation_form.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -92,8 +97,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.515" />
-        <option value="bundled-python-sdk-7e47963ff851-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.515" />
+        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-PY-252.25557.130" />
+        <option value="bundled-python-sdk-1bde30d8e611-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.130" />
       </set>
     </attachedChunks>
   </component>
@@ -108,6 +113,9 @@
       <workItem from="1754930191458" duration="428000" />
       <workItem from="1755099799487" duration="7719000" />
       <workItem from="1755114144122" duration="1687000" />
+      <workItem from="1756720622167" duration="1327000" />
+      <workItem from="1756729000939" duration="317000" />
+      <workItem from="1756729655028" duration="631000" />
     </task>
     <task id="LOCAL-00001" summary="comitul 1 - aproape gata! backend">
       <option name="closed" value="true" />
