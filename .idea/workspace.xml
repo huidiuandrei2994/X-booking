@@ -4,20 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul 13 frontend time!">
-      <change afterPath="$PROJECT_DIR$/static/css/theme_modern.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/hotelapp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/hotelapp.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul 14 frontend time!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/hotellapp/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/hotellapp/invoice_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/invoice_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/hotellapp/reservation_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/reservation_form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/hotellapp/calendar_ui.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/hotellapp/calendar_ui.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -35,12 +33,12 @@
     &quot;assignee&quot;: &quot;huidiuandrei2994&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/huidiuandrei2994/hotelapp1.0.git&quot;,
-    &quot;accountId&quot;: &quot;f384fb5e-c22b-473d-b987-134404384064&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/huidiuandrei2994/hotelapp1.0.git",
+    "accountId": "e3786fb6-79ee-4b66-88e3-31e074a03ada"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -49,24 +47,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Django Server.hotelapp.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Django Server.hotelapp.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "django.template.preview.state": "SHOW_EDITOR",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="hotelapp" type="Python.DjangoServer" factoryName="Django server">
       <module name="hotelapp" />
@@ -115,7 +114,7 @@
       <workItem from="1755114144122" duration="1687000" />
       <workItem from="1756720622167" duration="1327000" />
       <workItem from="1756729000939" duration="317000" />
-      <workItem from="1756729655028" duration="631000" />
+      <workItem from="1756729655028" duration="2060000" />
     </task>
     <task id="LOCAL-00001" summary="comitul 1 - aproape gata! backend">
       <option name="closed" value="true" />
@@ -213,7 +212,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755104960012</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="comitul 14 frontend time!">
+      <option name="closed" value="true" />
+      <created>1756730570176</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1756730570176</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -231,6 +238,7 @@
     <MESSAGE value="comitul 11 frontend time!" />
     <MESSAGE value="comitul 12 frontend time!" />
     <MESSAGE value="comitul 13 frontend time!" />
-    <option name="LAST_COMMIT_MESSAGE" value="comitul 13 frontend time!" />
+    <MESSAGE value="comitul 14 frontend time!" />
+    <option name="LAST_COMMIT_MESSAGE" value="comitul 14 frontend time!" />
   </component>
 </project>
