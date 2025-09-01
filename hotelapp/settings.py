@@ -38,6 +38,26 @@ if _railway_private:
     _raw_allowed.append(_railway_private)
 ALLOWED_HOSTS = [h.strip() for h in _raw_allowed if h.strip()]
 
+# Construiește CSRF_TRUSTED_ORIGINS global (independent de DEBUG)
+_csrf_from_env = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '')
+CSRF_TRUSTED_ORIGINS = _csrf_from_env.split(',') if _csrf_from_env else []
+# Adaugă automat domeniul public Railway (HTTPS) dacă este disponibil
+if _railway_public:
+    origin = f"https://{_railway_public}"
+    if origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
+# Opțional: derivă origins (https://host) din ALLOWED_HOSTS care arată ca domenii reale
+for host in ALLOWED_HOSTS:
+    host = host.strip()
+    if not host:
+        continue
+    # evită forme IPv6 [::1] și porturi; include domenii și IP-uri
+    if host.startswith('['):
+        continue
+    candidate = f"https://{host}"
+    if candidate not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(candidate)
+
 
 
 # Application definition
@@ -152,9 +172,4 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = int(os.environ.get('DJANGO_SECURE_HSTS_SECONDS', '2592000'))  # 30 days
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    # Optional: set from env for reverse proxies / platforms
-    _csrf_from_env = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '')
-    CSRF_TRUSTED_ORIGINS = _csrf_from_env.split(',') if _csrf_from_env else []
-    _railway_public = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
-    if _railway_public:
-        CSRF_TRUSTED_ORIGINS.append(f"https://{_railway_public}")
+    # CSRF_TRUSTED_ORIGINS este construit global mai sus (nu îl suprascriem aici)
