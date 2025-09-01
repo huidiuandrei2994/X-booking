@@ -28,7 +28,15 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-h8$qq#c4g!w4pz
 DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', "localhost,127.0.0.1,[::1],192.168.1.158").split(',')
+# Build ALLOWED_HOSTS from env, plus domeniile Railway dacă sunt prezente
+_raw_allowed = os.environ.get('DJANGO_ALLOWED_HOSTS', "localhost,127.0.0.1,[::1],192.168.1.158").split(',')
+_railway_public = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
+_railway_private = os.environ.get('RAILWAY_PRIVATE_DOMAIN')
+if _railway_public:
+    _raw_allowed.append(_railway_public)
+if _railway_private:
+    _raw_allowed.append(_railway_private)
+ALLOWED_HOSTS = [h.strip() for h in _raw_allowed if h.strip()]
 
 
 
@@ -145,4 +153,8 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     # Optional: set from env for reverse proxies / platforms
-    CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',') if os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS') else []
+    _csrf_from_env = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '')
+    CSRF_TRUSTED_ORIGINS = _csrf_from_env.split(',') if _csrf_from_env else []
+    _railway_public = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
+    if _railway_public:
+        CSRF_TRUSTED_ORIGINS.append(f"https://{_railway_public}")

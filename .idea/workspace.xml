@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul 15frontend time!">
-      <change afterPath="$PROJECT_DIR$/DEPLOY_RAILWAY.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Procfile" beforeDir="false" afterPath="$PROJECT_DIR$/Procfile" afterDir="false" />
+    <list default="true" id="65cac4f4-5240-4bba-8dd3-ca4298f27513" name="Changes" comment="comitul de deploy test">
       <change beforePath="$PROJECT_DIR$/hotelapp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/hotelapp/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +112,7 @@
       <workItem from="1755114144122" duration="1687000" />
       <workItem from="1756720622167" duration="1327000" />
       <workItem from="1756729000939" duration="317000" />
-      <workItem from="1756729655028" duration="7140000" />
+      <workItem from="1756729655028" duration="7482000" />
     </task>
     <task id="LOCAL-00001" summary="comitul 1 - aproape gata! backend">
       <option name="closed" value="true" />
@@ -238,7 +234,23 @@
       <option name="project" value="LOCAL" />
       <updated>1756734680071</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="comitul de deploy test">
+      <option name="closed" value="true" />
+      <created>1756740960410</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1756740960410</updated>
+    </task>
+    <task id="LOCAL-00017" summary="comitul de deploy test">
+      <option name="closed" value="true" />
+      <created>1756741086335</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1756741086335</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -258,6 +270,7 @@
     <MESSAGE value="comitul 13 frontend time!" />
     <MESSAGE value="comitul 14 frontend time!" />
     <MESSAGE value="comitul 15frontend time!" />
-    <option name="LAST_COMMIT_MESSAGE" value="comitul 15frontend time!" />
+    <MESSAGE value="comitul de deploy test" />
+    <option name="LAST_COMMIT_MESSAGE" value="comitul de deploy test" />
   </component>
 </project>
